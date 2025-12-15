@@ -11,7 +11,6 @@ from   coriolis            import plugins
 from   coriolis.plugins.block.block         import Block
 from   coriolis.plugins.block.configuration import IoPin, GaugeConf
 from   coriolis.plugins.block.spares        import Spares
-from   pdks.nsx2.core2chip.niolib           import CoreToChip
 from   coriolis.plugins.chip.configuration  import ChipConf
 from   coriolis.plugins.chip.chip           import Chip
 

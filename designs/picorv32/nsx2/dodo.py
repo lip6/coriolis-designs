@@ -33,13 +33,10 @@ ruleCgt     = PnR.mkRule( 'cgt' )
 
 ruleYosys = Yosys   .mkRule( 'yosys', topName+'.v' )
 
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ 'picorv32.vst' ]
-                                    , [ruleYosys]
-                                    , flags=0 )
 rulePnR = PnR.mkRule( 'pnr', [topName+'_cts_r.ap'
                             , topName+'_cts_r.vst'
                             , topName+'_cts_r.spi' ]
-                            , [ruleB2V]
+                            , [ruleYosys]
                             , doDesign.scriptMain
                             , topName=topName )
 
