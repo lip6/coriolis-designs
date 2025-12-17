@@ -28,7 +28,7 @@ def scriptMain ( **kw ):
        #setTraceLevel( 550 )
        #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( CoreName, CRL.Catalog.State.Logical )
+        cell = CRL.Blif.load( CoreName )
         af.saveCell( cell, CRL.Catalog.State.Logical )
         if editor:
             editor.setCell( cell ) 
@@ -36,15 +36,15 @@ def scriptMain ( **kw ):
         m1pitch = l(10.0)
         m2pitch = l(20.0)
         ioPinsSpec = [ (IoPin.WEST |IoPin.A_BEGIN, 'di({})'  , 20*m1pitch, 20*m1pitch,  8)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'do({})'  , 30*m1pitch, 20*m1pitch,  8)
-                          ,(IoPin.EAST |IoPin.A_BEGIN, 'clk', 10*m1pitch, 0, 1)
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'a({})'   , 40*m1pitch, 20*m1pitch, 16)
-                         , (IoPin.NORTH|IoPin.A_BEGIN, 'irq'     , 140*m2pitch,       0 ,  1)
-                         , (IoPin.NORTH|IoPin.A_BEGIN, 'nmi'     , 160*m2pitch,       0 ,  1)
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'rdy'     , 100*m2pitch,       0 ,  1)
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'we'      , 120*m2pitch,       0 ,  1)
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'reset'   , 140*m2pitch,       0 ,  1)
-                         ]
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'do({})'  , 30*m1pitch, 20*m1pitch,  8)
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'clk'     , 10*m1pitch, 0, 1)
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'a({})'   , 40*m1pitch, 20*m1pitch, 16)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'irq'     , 140*m2pitch,       0 ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'nmi'     , 160*m2pitch,       0 ,  1)
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'rdy'     , 100*m2pitch,       0 ,  1)
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'we'      , 120*m2pitch,       0 ,  1)
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'reset'   , 140*m2pitch,       0 ,  1)
+                     ]
         print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.anabatic.globalIterations   = 10
