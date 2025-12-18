@@ -1,5 +1,7 @@
-from pdks.sky130_c4m    import setup
-setup(  )
+
+from doit            import get_var
+from pdks.sky130_c4m import setup
+setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
 
@@ -10,27 +12,28 @@ from coriolis.designflow.x2y      import x2y
 from coriolis.designflow.tasyagle import TasYagle, STA, XTas
 from coriolis.designflow.yosys    import Yosys
 from coriolis.designflow.blif2vst import Blif2Vst
+from coriolis.designflow.copy     import Copy
 from coriolis.designflow.alias    import Alias
 from coriolis.designflow.clean    import Clean
-PnR.textMode  = True
+import doDesign
 
+reuseBlif          = get_var( 'reuse-blif', None )
+PnR.textMode       = True
+doDesign.buildChip = False
 
+if reuseBlif:
+    ruleYosys = Copy.mkRule( 'yosys', 'picorv32.blif', './non_generateds/picorv32.{}.blif'.format( reuseBlif ))
+else:
+    ruleYosys = Yosys.mkRule( 'yosys', 'picorv32.v' )
 
-
-from doDesign  import scriptMain
-
-ruleYosys = Yosys   .mkRule( 'yosys', 'picorv32.v' )
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ 'picorv32.vst' ]
-                                    , [ruleYosys]
-                                    , flags=0 )
-rulePnR   = PnR     .mkRule( 'pnr'  , [ 'picorv32_cts_r.gds'
-                                      , 'picorv32_cts_r.spi'
-                                      , 'picorv32_cts_r.vst' ]
-                                    , [ruleYosys]
-                                    , scriptMain )
-ruleCgt   = PnR     .mkRule( 'cgt' )
+rulePnR   = PnR  .mkRule( 'pnr'  , [ 'picorv32_cts_r.gds'
+                                   , 'picorv32_cts_r.spi'
+                                   , 'picorv32_cts_r.vst' ]
+                                 , [ruleYosys]
+                                 , doDesign.scriptMain )
+ruleCgt   = PnR  .mkRule( 'cgt' )
 staLayout = rulePnR.file_target( 2 )
-ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
-ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
-ruleGds   = Alias   .mkRule( 'gds', [rulePnR] )
-ruleClean = Clean   .mkRule()
+ruleSTA   = STA  .mkRule( 'sta' , staLayout )
+ruleXTas  = XTas .mkRule( 'xtas', ruleSTA.file_target(0) )
+ruleGds   = Alias.mkRule( 'gds' , [rulePnR] )
+ruleClean = Clean.mkRule()

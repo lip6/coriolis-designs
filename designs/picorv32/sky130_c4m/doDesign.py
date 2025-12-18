@@ -3,10 +3,10 @@
 import sys
 import os
 import traceback
-from   coriolis            import Cfg, CRL
-from   coriolis.Hurricane  import DbU, Breakpoint
+from   coriolis            import CRL
+from   coriolis.Hurricane  import DbU, Breakpoint, DataBase, Library
 from   coriolis.helpers.io import ErrorMessage, WarningMessage, catch
-from   coriolis.helpers    import loadUserSettings, setTraceLevel, trace, overlay, l, u, n
+from   coriolis.helpers    import loadUserSettings, setTraceLevel, trace, l, u, n
 loadUserSettings()
 from   coriolis            import plugins
 from   coriolis.plugins.block.block         import Block
@@ -14,8 +14,7 @@ from   coriolis.plugins.block.configuration import IoPin, GaugeConf
 from   coriolis.plugins.block.spares        import Spares
 from   coriolis.plugins.chip.configuration  import ChipConf
 from   coriolis.plugins.chip.chip           import Chip
-from   pdks.sky130_c4m.core2chip.sky130         import CoreToChip
-
+from   pdks.sky130_c4m.core2chip.sky130     import CoreToChip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
@@ -24,30 +23,27 @@ buildChip = False
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
     global af, buildChip
-    rvalue    = True
-    gaugeName = None
-    with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
-        cfg.misc.catchCore              = False
-        cfg.misc.info                   = False
-        cfg.misc.paranoid               = False
-        cfg.misc.bug                    = False
-        cfg.misc.logMode                = True
-        cfg.misc.verboseLevel1          = True
-        cfg.misc.verboseLevel2          = True
-        cfg.misc.minTraceLevel          = 16000
-        cfg.misc.maxTraceLevel          = 17000
-
+ 
+    loadOpenROAD = False
+    rvalue       = True
     try:
-       #setTraceLevel( 550 )
-       #Breakpoint.setStopLevel( 99 )
-        #if 'CHECK_TOOLKIT' in os.environ:
-        #    checkToolkitDir   = os.environ[ 'CHECK_TOOLKIT' ]
-        #    harnessProjectDir = checkToolkitDir + '/cells/sky130'
-        #else:
-        #    print( '[ERROR] The "CHECK_TOOLKIT" environment variable has not been set.'  )
-        #    print( '        Please check "./mk/users.d/user-CONFIG.mk".'  )
-        #    sys.exit( 1 )
         cell, editor = plugins.kwParseMain( **kw )
+
+        if loadOpenROAD:
+            db      = DataBase.getDB()
+            tech    = db.getTechnology()
+            rootlib = db.getRootLibrary()
+            orLib   = Library.create(rootlib, 'OpenROAD')
+            gdsPath = '../OpenROAD/picorv32_sky130.gds'
+            CRL.Gds.load( orLib, gdsPath, CRL.Gds.Layer_0_IsBoundary|CRL.Gds.NoBlockages )
+            af.wrapLibrary( orLib, 1 ) 
+            cell, editor = plugins.kwParseMain( **kw )
+            cell = af.getCell( 'picorv32', CRL.Catalog.State.Logical )
+            if editor:
+                editor.setCell( cell ) 
+                editor.setDbuMode( DbU.StringModePhysical )
+            return True
+
         cellName = 'picorv32'
         if buildChip:
             cellName += '_harness'
@@ -141,27 +137,29 @@ def scriptMain ( **kw ):
         conf.cfg.misc.info                   = False
         conf.cfg.misc.paranoid               = False
         conf.cfg.misc.bug                    = False
-        conf.cfg.misc.logMode                = True
+        conf.cfg.misc.logMode                = False
         conf.cfg.misc.verboseLevel1          = True
         conf.cfg.misc.verboseLevel2          = True
        #conf.cfg.etesian.bloat               = 'Flexlib'
         conf.cfg.etesian.densityVariation    = 0.05
         conf.cfg.etesian.aspectRatio         = 1.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
-        conf.cfg.etesian.spaceMargin         = 0.05
-        conf.cfg.anabatic.globalIterations   = 10
-        conf.cfg.anabatic.gcellAspectRatio   = 2.0
-        conf.cfg.katana.maxFlatEdgeOverflow  = 200
-       #conf.cfg.katana.hTracksReservedMin   = 3
-       #conf.cfg.katana.vTracksReservedMin   = 1
-       #conf.cfg.katana.hTracksReservedLocal = 6
-       #conf.cfg.katana.vTracksReservedLocal = 3
-        conf.cfg.katana.globalRipupLimit     = 7
-        conf.cfg.katana.runRealignStage      = False
+        conf.cfg.etesian.spaceMargin         = 0.02
+        conf.cfg.anabatic.searchHalo         = 1
+        conf.cfg.anabatic.globalIterations   = 20
+        conf.cfg.katana.maxFlatEdgeOverflow  = 300
+        conf.cfg.anabatic.topRoutingLayer    = 'm4'
+        conf.cfg.katana.hTracksReservedLocal = 11
+        conf.cfg.katana.vTracksReservedLocal = 15
+        conf.cfg.katana.hTracksReservedMin   = 5
+        conf.cfg.katana.vTracksReservedMin   = 6
+        conf.cfg.katana.trackFill            = 0
+        conf.cfg.katana.runRealignStage      = True
         conf.cfg.katana.dumpMeasures         = True
-        if buildChip:
-            #default path is the installation pdk one: pdks/sky130_c4m/4M.Sky130/libs.tech/
-            conf.cfg.harness.path            = harnessProjectDir + '/user_project_wrapper.def'
+        conf.cfg.block.spareSide             = 8*conf.sliceHeight
+        conf.cfg.chip.minPadSpacing          = u(1.46)
+        conf.cfg.chip.supplyRailWidth        = u(20.0)
+        conf.cfg.chip.supplyRailPitch        = u(40.0)
         conf.editor              = editor
         conf.ioPinsInTracks      = True
         conf.useSpares           = True
@@ -171,14 +169,14 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreSize            = conf.computeCoreSize( 100*conf.sliceHeight, 1.0 )
-        conf.chipSize            = ( u(2020.0), u(2060.0) )
+        conf.chipSize            = ( u(   2020.0), u( 2060.0) )
         conf.coreToChipClass     = CoreToChip
         if buildChip:
-            conf.useHTree( 'io_in_from_pad(37)', Spares.HEAVY_LEAF_LOAD )
-            conf.useHTree( 'io_in_from_pad(35)' )
+            conf.useHTree( 'io_in_from_pad(0)', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'io_in_from_pad(28)' )
         else:
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-            conf.useHTree( 'resent' )
+            conf.useHTree( 'resetn' )
         #conf.useHTree( 'core.subckt_0_cpu.abc_11829_new_n340' )
         if buildChip:
             chipBuilder = Chip( conf )

@@ -1,9 +1,10 @@
 
 import os
 from   pathlib import Path
+from   doit    import get_var
 from   pdks.ihpsg13g2_c4m import setup
 
-setup( )
+setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
 
@@ -17,20 +18,24 @@ from coriolis.designflow.lvx                import Lvx
 from coriolis.designflow.x2y                import x2y
 from coriolis.designflow.tasyagle           import TasYagle, STA, XTas
 from coriolis.designflow.alias              import Alias
+from coriolis.designflow.copy               import Copy
 from coriolis.designflow.clean              import Clean
 from pdks.ihpsg13g2_c4m.designflow.filler   import Filler
 from pdks.ihpsg13g2_c4m.designflow.sealring import SealRing
 from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
-PnR.textMode       = True
-pnrSuffix          = '_cts_r'
-topName            = 'picorv32'
-#drcFlags           = DRC.SHOW_ERRORS
-drcFlags           = 0
+PnR.textMode = True
+reuseBlif    = get_var( 'reuse-blif', None )
+pnrSuffix    = '_cts_r'
+topName      = 'picorv32'
+#drcFlags     = DRC.SHOW_ERRORS
+drcFlags     = 0
 
-ruleYosys = Yosys   .mkRule( 'yosys', 'picorv32.v' )
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , 'picorv32.vst', [ruleYosys], flags=0 )
+if reuseBlif:
+    ruleYosys = Copy.mkRule( 'yosys', 'picorv32.blif', './non_generateds/picorv32.{}.blif'.format( reuseBlif ))
+else:
+    ruleYosys = Yosys.mkRule( 'yosys', 'picorv32.v' )
 
 if doDesign.buildChip:
     TasYagle.ClockName = 'clk_from_pad'
@@ -47,7 +52,7 @@ if doDesign.buildChip:
                                      , 'corona.spi'
                                      , 'picorv32_cts.spi'
                                      , 'picorv32_cts.vst' ]
-                                     , [ruleB2V, ruleSeal]
+                                     , [ruleYosys, ruleSeal]
                                    , doDesign.scriptMain
                                    , topName=topName )
     staLayout = rulePnR.file_target( 6 )
@@ -57,7 +62,7 @@ else:
     rulePnR = PnR.mkRule( 'pnr'    , [ 'picorv32_cts_r.gds'
                                      , 'picorv32_cts_r.vst'
                                      , 'picorv32_cts_r.spi' ]
-                                     , [ruleB2V]
+                                     , [ruleYosys]
                                    , doDesign.scriptMain
                                    , topName=topName )
     ruleX2Y = x2y.mkRule( 'spi2vst', 'picorv32_cts_r_spi.vst', 'picorv32_cts_r.spi' )

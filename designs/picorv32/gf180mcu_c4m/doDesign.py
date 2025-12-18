@@ -33,18 +33,6 @@ def scriptMain ( **kw ):
         cfg.misc.maxTraceLevel          = 17000
 
     global af, buildChip
-    hpitch       = 0
-    gaugeName    = Cfg.getParamString('anabatic.routingGauge').asString()
-    routingGauge = af.getRoutingGauge( gaugeName )
-    for layerGauge in routingGauge.getLayerGauges():
-        if layerGauge.getType() in [ CRL.RoutingLayerGauge.PinOnly
-                                   , CRL.RoutingLayerGauge.Unusable
-                                   , CRL.RoutingLayerGauge.BottomPowerSupply ]:
-            continue
-        if layerGauge.getDirection() == CRL.RoutingLayerGauge.Horizontal:
-            hpitch = layerGauge.getPitch()
-            break
-    sliceHeight = af.getCellGauge().getSliceHeight()
 
     rvalue = True
     try:
@@ -53,9 +41,7 @@ def scriptMain ( **kw ):
         #    print( '"{}" {}'.format(cell.getName(),cell) )
         #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'picorv32', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( 'picorv32' )
+        cell = CRL.Blif.load( 'picorv32' )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
@@ -109,81 +95,75 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH, None, 'a_14'       , 'a(14)'  , 'A(14)'  )
                      , (IoPin.NORTH, None, 'a_15'       , 'a(15)'  , 'A(15)'  )
                      ]
-        vspace     = 6*hpitch
-        hspace     = 5*hpitch
+        vspace     = 6
+        hspace     = 4
         ioPinsSpec = [ (IoPin.NORTH|IoPin.A_BEGIN, 'trace_data({})'  ,     vspace, vspace, range(0, 36))
-                         , (IoPin.NORTH|IoPin.A_BEGIN, 'mem_la_wdata({})',  38*vspace, vspace, range(0, 32))
-                         , (IoPin.NORTH|IoPin.A_BEGIN, 'mem_la_addr({})' ,  70*vspace, vspace, range(0, 32))
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'eoi({})'         ,     vspace, vspace, range(0, 32))
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_addr({})'    ,  33*vspace, vspace, range(0, 32))
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_wdata({})'   ,  65*vspace, vspace, range(0, 32))
-                         , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_rdata({})'   ,  97*vspace, vspace, range(0,  4))
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'mem_rdata({})'   ,     hspace, hspace, range(4, 32))
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'irq({})'         ,  33*hspace, hspace, range(0, 32))
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'pcpi_insn({})'   ,  65*hspace, hspace, range(0, 32))
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'pcpi_rs1({})'    ,  97*hspace, hspace, range(0,  8))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rs1({})'    ,     hspace, hspace, range(8, 32))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rd({})'     ,  33*hspace, hspace, range(0, 32))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rs2({})'    ,  97*hspace, hspace, range(8, 32))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_wstrb({})'   , 121*hspace, hspace, range(0,  4))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_wstrb({})', 125*hspace, hspace, range(0,  4))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_write'    , 129*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'trap'            , 130*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'resetn'          , 131*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_instr'       , 132*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_valid'       , 133*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_read'     , 134*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_wr'         , 135*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_wait'       , 136*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'trace_valid'     , 137*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       , 138*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             , 139*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      , 140*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace, 0, 1)]
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'mem_la_wdata({})',  38*vspace, vspace, range(0, 32))
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'mem_la_addr({})' ,  70*vspace, vspace, range(0, 32))
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'eoi({})'         ,     vspace, vspace, range(0, 32))
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_addr({})'    ,  33*vspace, vspace, range(0, 32))
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_wdata({})'   ,  65*vspace, vspace, range(0, 32))
+                     , (IoPin.SOUTH|IoPin.A_BEGIN, 'mem_rdata({})'   ,  97*vspace, vspace, range(0,  4))
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'mem_rdata({})'   ,     hspace, hspace, range(4, 32))
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'irq({})'         ,  33*hspace, hspace, range(0, 32))
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'pcpi_insn({})'   ,  65*hspace, hspace, range(0, 32))
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'pcpi_rs1({})'    ,  97*hspace, hspace, range(0,  8))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rs1({})'    ,     hspace, hspace, range(8, 32))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rd({})'     ,  33*hspace, hspace, range(0, 32))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_rs2({})'    ,  97*hspace, hspace, range(8, 32))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_wstrb({})'   , 121*hspace, hspace, range(0,  4))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_wstrb({})', 125*hspace, hspace, range(0,  4))
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_write'    , 129*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'trap'            , 130*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'resetn'          , 131*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_instr'       , 132*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_valid'       , 133*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_la_read'     , 134*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_wr'         , 135*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_wait'       , 136*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'trace_valid'     , 137*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       , 138*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             , 139*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      , 140*hspace, 0, 1)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace, 0, 1)]
        #ioPinsSpec = []
-        designConf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
-        designConf.cfg.etesian.bloat               = 'disabled'
-       #designConf.cfg.etesian.bloat               = 'nsxlib'
-        designConf.cfg.etesian.densityVariation    = 0.05
-        designConf.cfg.etesian.aspectRatio         = 1.0
+        conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
+        conf.cfg.etesian.bloat               = 'disabled'
+        conf.cfg.etesian.densityVariation    = 0.05
+        conf.cfg.etesian.aspectRatio         = 1.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
-       #designConf.cfg.etesian.spaceMargin         = 0.10
-       #designConf.cfg.anabatic.searchHalo         = 2
-        designConf.cfg.anabatic.globalIterations   = 6
-        designConf.cfg.katana.hTracksReservedLocal = 6
-        designConf.cfg.katana.vTracksReservedLocal = 3
-        designConf.cfg.katana.hTracksReservedMin   = 4
-        designConf.cfg.katana.vTracksReservedMin   = 5
-        designConf.cfg.katana.trackFill            = 0
-        designConf.cfg.katana.runRealignStage      = True
-        designConf.cfg.block.spareSide             = 16*sliceHeight
-        designConf.cfg.chip.padCoreSide            = 'North'
-       #designConf.cfg.chip.use45corners           = False
-       #designConf.cfg.chip.useAbstractPads        = True
-        designConf.cfg.chip.supplyRailWidth        = l(250.0)
-        designConf.cfg.chip.supplyRailPitch        = l(450.0)
-        designConf.editor              = editor
-        designConf.useSpares           = True
-        designConf.useHFNS             = False
-        designConf.bColumns            = 2
-        designConf.bRows               = 2
-        designConf.chipName            = 'chip'
-        designConf.chipConf.ioPadGauge = 'LEF.GF_IO_Site'
-        designConf.coreToChipClass     = CoreToChip
-        designConf.coreSize            = (  90*sliceHeight, 90*sliceHeight )
-        designConf.chipSize            = ( 140*sliceHeight, 140*sliceHeight )
+       #conf.cfg.etesian.spaceMargin         = 0.10
+       #conf.cfg.anabatic.searchHalo         = 2
+        conf.cfg.anabatic.globalIterations   = 6
+        conf.cfg.katana.hTracksReservedLocal = 6
+        conf.cfg.katana.vTracksReservedLocal = 3
+        conf.cfg.katana.hTracksReservedMin   = 4
+        conf.cfg.katana.vTracksReservedMin   = 5
+        conf.cfg.katana.trackFill            = 0
+        conf.cfg.katana.runRealignStage      = True
+        conf.cfg.block.spareSide             = 16*conf.sliceHeight
+        conf.editor              = editor
+        conf.ioPinsInTracks      = True
+        conf.useSpares           = True
+        conf.useHFNS             = True
+        conf.bColumns            = 2
+        conf.bRows               = 2
+        conf.chipName            = 'chip'
+        conf.coreToChipClass     = CoreToChip
+        conf.coreSize            = conf.computeCoreSize( 86*conf.sliceHeight, 1.0 )
+        conf.chipSize            = ( 140*conf.sliceHeight, 140*conf.sliceHeight )
         if buildChip:
-            designConf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'reset_from_pad' )
-            chipBuilder = Chip( designConf )
+            conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'reset_from_pad' )
+            chipBuilder = Chip( conf )
             chipBuilder.doChipNetlist()
             chipBuilder.doChipFloorplan()
             rvalue = chipBuilder.doPnR()
             chipBuilder.save()
         else:
-            designConf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'resetn' )
-            blockBuilder = Block( designConf )
+            conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'resetn' )
+            blockBuilder = Block( conf )
             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
