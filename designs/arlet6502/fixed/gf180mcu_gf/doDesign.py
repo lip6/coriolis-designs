@@ -21,6 +21,8 @@ buildChip = False
 
 
 def scriptMain ( **kw ):
+    global af, buildChip
+
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
 
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
@@ -35,20 +37,6 @@ def scriptMain ( **kw ):
         cfg.misc.maxTraceLevel          = 16000
         #cfg.block.upperEastWestPins     = None
         #print( 'cfg.block.upperEastWestPins={}'.format( cfg.block.upperEastWestPins ))
-
-    global af, buildChip
-    hpitch       = 0
-    gaugeName    = Cfg.getParamString('anabatic.routingGauge').asString()
-    routingGauge = af.getRoutingGauge( gaugeName )
-    for layerGauge in routingGauge.getLayerGauges():
-        if layerGauge.getType() in [ CRL.RoutingLayerGauge.PinOnly
-                                   , CRL.RoutingLayerGauge.Unusable
-                                   , CRL.RoutingLayerGauge.BottomPowerSupply ]:
-            continue
-        if layerGauge.getDirection() == CRL.RoutingLayerGauge.Horizontal:
-            hpitch = layerGauge.getPitch()
-            break
-    sliceHeight = af.getCellGauge().getSliceHeight()
 
     rvalue = True
     try:
@@ -71,45 +59,45 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 15*16,  0 , 1)
                      ]
         print(ioPinsSpec)
-        designConf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
-        designConf.cfg.etesian.bloat               = 'disabled'
-       #designConf.cfg.etesian.bloat               = 'nsxlib'
-        designConf.cfg.etesian.densityVariation    = 0.05
-        designConf.cfg.etesian.aspectRatio         = 2.0
+        conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
+        conf.cfg.etesian.bloat               = 'disabled'
+       #conf.cfg.etesian.bloat               = 'nsxlib'
+        conf.cfg.etesian.densityVariation    = 0.05
+        conf.cfg.etesian.aspectRatio         = 2.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
-       #designConf.cfg.etesian.spaceMargin         = 0.10
-       #designConf.cfg.anabatic.searchHalo         = 2
-       #designConf.cfg.anabatic.globalIterations   = 6
-        designConf.cfg.anabatic.gcellAspectRatio   = 2.0
-       #designConf.cfg.katana.hTracksReservedLocal = 7
-        designConf.cfg.katana.vTracksReservedLocal = 8
-       #designConf.cfg.katana.hTracksReservedMin   = 5
-       #designConf.cfg.katana.vTracksReservedMin   = 6
-        designConf.cfg.katana.trackFill            = 0
-        designConf.cfg.katana.runRealignStage      = False
-        designConf.cfg.block.spareSide             = 8*sliceHeight
-        designConf.coreToChipClass     = CoreToChip
-        designConf.editor              = editor
-        designConf.ioPinsInTracks      = True
-        designConf.useSpares           = True
-        designConf.useHFNS             = True
-        designConf.bColumns            = 2
-        designConf.bRows               = 2
-        designConf.chipName            = 'chip'
-        designConf.coreSize            = designConf.computeCoreSize( 45*designConf.sliceHeight, 1.0 )
-        designConf.chipSize            = ( 350*sliceHeight, 350*sliceHeight )
+       #conf.cfg.etesian.spaceMargin         = 0.10
+       #conf.cfg.anabatic.searchHalo         = 2
+       #conf.cfg.anabatic.globalIterations   = 6
+        conf.cfg.anabatic.gcellAspectRatio   = 2.0
+       #conf.cfg.katana.hTracksReservedLocal = 7
+        conf.cfg.katana.vTracksReservedLocal = 8
+       #conf.cfg.katana.hTracksReservedMin   = 5
+       #conf.cfg.katana.vTracksReservedMin   = 6
+        conf.cfg.katana.trackFill            = 0
+        conf.cfg.katana.runRealignStage      = False
+        conf.cfg.block.spareSide             = 8*conf.sliceHeight
+        conf.coreToChipClass     = CoreToChip
+        conf.editor              = editor
+        conf.ioPinsInTracks      = True
+        conf.useSpares           = True
+        conf.useHFNS             = True
+        conf.bColumns            = 2
+        conf.bRows               = 2
+        conf.chipName            = 'chip'
+        conf.coreSize            = conf.computeCoreSize( 45*conf.sliceHeight, 1.0 )
+        conf.chipSize            = ( 350*conf.sliceHeight, 350*conf.sliceHeight )
         if buildChip:
-            designConf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'reset_from_pad' )
-            chipBuilder = Chip( designConf )
+            conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'reset_from_pad' )
+            chipBuilder = Chip( conf )
             chipBuilder.doChipNetlist()
             chipBuilder.doChipFloorplan()
             rvalue = chipBuilder.doPnR()
             chipBuilder.save()
         else:
-            designConf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'reset' )
-            blockBuilder = Block( designConf )
+            conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'reset' )
+            blockBuilder = Block( conf )
             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:

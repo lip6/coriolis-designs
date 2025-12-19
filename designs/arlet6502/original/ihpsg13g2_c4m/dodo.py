@@ -1,9 +1,10 @@
 
 import os
 from   pathlib import Path
+from   doit               import get_var
 from   pdks.ihpsg13g2_c4m import setup
 
-setup( )
+setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
 
@@ -16,6 +17,7 @@ from coriolis.designflow.pnr                import PnR
 from coriolis.designflow.lvx                import Lvx
 from coriolis.designflow.x2y                import x2y
 from coriolis.designflow.tasyagle           import TasYagle, STA, XTas
+from coriolis.designflow.copy               import Copy
 from coriolis.designflow.alias              import Alias
 from coriolis.designflow.clean              import Clean
 from pdks.ihpsg13g2_c4m.designflow.filler   import Filler
@@ -23,14 +25,18 @@ from pdks.ihpsg13g2_c4m.designflow.sealring import SealRing
 from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
+reuseBlif          = get_var( 'reuse-blif', None )
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'arlet6502'
 #drcFlags           = DRC.SHOW_ERRORS
 drcFlags           = 0
+doDesign.buildChip = True
 
-ruleYosys = Yosys   .mkRule( 'yosys', 'arlet6502.v' )
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , 'arlet6502.vst', [ruleYosys], flags=0 )
+if reuseBlif:
+    ruleYosys = Copy.mkRule( 'yosys', 'arlet6502.blif', './non_generateds/arlet6502.{}.blif'.format( reuseBlif ))
+else:
+    ruleYosys = Yosys.mkRule( 'yosys', 'arlet6502.v' )
 
 if doDesign.buildChip:
     TasYagle.ClockName = 'clk_from_pad'
@@ -47,23 +53,19 @@ if doDesign.buildChip:
                                      , 'corona.spi'
                                      , 'arlet6502_cts.spi'
                                      , 'arlet6502_cts.vst' ]
-                                     , [ruleB2V, ruleSeal]
+                                     , [ruleYosys, ruleSeal]
                                    , doDesign.scriptMain
                                    , topName=topName )
     staLayout = rulePnR.file_target( 6 )
 else:
     TasYagle.ClockName = 'clk'
     # Rule for block generation.
-    rulePnR = PnR.mkRule( 'pnr'    , [ 'arlet6502_cts_r.gds'
+    rulePnR = PnR.mkRule( 'gds'    , [ 'arlet6502_cts_r.gds'
                                      , 'arlet6502_cts_r.vst'
                                      , 'arlet6502_cts_r.spi' ]
-                                     , [ruleB2V]
+                                     , [ruleYosys]
                                    , doDesign.scriptMain
                                    , topName=topName )
-    ruleX2Y = x2y.mkRule( 'spi2vst', 'arlet6502_cts_r_spi.vst', 'arlet6502_cts_r.spi' )
-    ruleLvx = Lvx.mkRule( 'lvx_spi', [ 'arlet6502_cts_r.vst'
-                                     , 'arlet6502_cts_r.spi' ]
-                                   , Lvx.MergeSupply|Lvx.Flatten )
     staLayout = rulePnR.file_target( 2 )
 
 ruleDrcMin  = DRC    .mkRule( 'drc_min', rulePnR.file_target(0), drcFlags|DRC.Minimal )

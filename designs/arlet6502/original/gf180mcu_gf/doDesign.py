@@ -83,8 +83,8 @@ def scriptMain ( **kw ):
         designConf.cfg.anabatic.gcellAspectRatio   = 2.0
        #designConf.cfg.katana.hTracksReservedLocal = 7
         designConf.cfg.katana.vTracksReservedLocal = 8
-       #designConf.cfg.katana.hTracksReservedMin   = 5
-       #designConf.cfg.katana.vTracksReservedMin   = 6
+        designConf.cfg.katana.hTracksReservedMin   = 6
+        designConf.cfg.katana.vTracksReservedMin   = 12
         designConf.cfg.katana.trackFill            = 0
         designConf.cfg.katana.runRealignStage      = False
         designConf.cfg.block.spareSide             = 8*sliceHeight
@@ -96,7 +96,7 @@ def scriptMain ( **kw ):
         designConf.bColumns            = 2
         designConf.bRows               = 2
         designConf.chipName            = 'chip'
-        designConf.coreSize            = designConf.computeCoreSize( 45*designConf.sliceHeight, 1.0 )
+        designConf.coreSize            = designConf.computeCoreSize( 44*designConf.sliceHeight, 1.0 )
         designConf.chipSize            = ( 350*sliceHeight, 350*sliceHeight )
         if buildChip:
             designConf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )

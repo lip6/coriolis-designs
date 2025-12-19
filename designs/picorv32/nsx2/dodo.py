@@ -19,6 +19,7 @@ from coriolis.designflow.lvx       import Lvx
 from coriolis.designflow.cougar    import Cougar
 from coriolis.designflow.druc      import Druc
 from coriolis.designflow.tasyagle  import TasYagle, STA, XTas
+from coriolis.designflow.copy      import Copy
 from coriolis.designflow.clean     import Clean
 from coriolis.designflow.klayout   import DRC
 import doDesign
@@ -32,7 +33,7 @@ if reuseBlif:
 else:
     ruleYosys = Yosys.mkRule( 'yosys', topName+'.v' )
 
-rulePnR = PnR.mkRule( 'pnr', [ topName+'_cts_r.ap'
+rulePnR = PnR.mkRule( 'gds', [ topName+'_cts_r.ap'
                              , topName+'_cts_r.vst'
                              , topName+'_cts_r.spi' ]
                            , [ruleYosys]

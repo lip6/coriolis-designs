@@ -8,13 +8,13 @@ from   coriolis.Hurricane  import DbU, Breakpoint
 from   coriolis.helpers.io import ErrorMessage, WarningMessage, catch
 from   coriolis.helpers    import loadUserSettings, setTraceLevel, trace, overlay, l, u, n
 loadUserSettings()
-from   coriolis            import plugins
+from   coriolis                             import plugins
 from   coriolis.plugins.block.block         import Block
 from   coriolis.plugins.block.configuration import IoPin, GaugeConf
 from   coriolis.plugins.block.spares        import Spares
 from   coriolis.plugins.chip.configuration  import ChipConf
 from   coriolis.plugins.chip.chip           import Chip
-from   pdks.sky130_c4m.core2chip.sky130         import CoreToChip
+from   pdks.sky130_c4m.core2chip.sky130     import CoreToChip
 
 
 af        = CRL.AllianceFramework.get()
@@ -24,6 +24,7 @@ buildChip = False
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
     global af, buildChip
+
     rvalue    = True
     gaugeName = None
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
@@ -40,17 +41,9 @@ def scriptMain ( **kw ):
     try:
        #setTraceLevel( 550 )
        #Breakpoint.setStopLevel( 99 )
-        #if 'CHECK_TOOLKIT' in os.environ:
-        #    checkToolkitDir   = os.environ[ 'CHECK_TOOLKIT' ]
-        #    harnessProjectDir = checkToolkitDir + '/cells/sky130'
-        #else:
-        #    print( '[ERROR] The "CHECK_TOOLKIT" environment variable has not been set.'  )
-        #    print( '        Please check "./mk/users.d/user-CONFIG.mk".'  )
-        #    sys.exit( 1 )
         cell, editor = plugins.kwParseMain( **kw )
         cellName = 'arlet6502'
-        if buildChip:
-            cellName += '_harness'
+        if buildChip: cellName += '_harness'
         cell = CRL.Blif.load( 'arlet6502' )
         if editor:
             editor.setCell( cell ) 
@@ -131,16 +124,13 @@ def scriptMain ( **kw ):
         conf.cfg.anabatic.globalIterations   = 10
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
         conf.cfg.katana.maxFlatEdgeOverflow  = 200
-       #conf.cfg.katana.hTracksReservedMin   = 3
-       #conf.cfg.katana.vTracksReservedMin   = 1
-       #conf.cfg.katana.hTracksReservedLocal = 6
-       #conf.cfg.katana.vTracksReservedLocal = 3
+        conf.cfg.katana.hTracksReservedMin   = 3
+        conf.cfg.katana.vTracksReservedMin   = 5
+        conf.cfg.katana.hTracksReservedLocal = 6
+        conf.cfg.katana.vTracksReservedLocal = 7
         conf.cfg.katana.globalRipupLimit     = 7
         conf.cfg.katana.runRealignStage      = False
         conf.cfg.katana.dumpMeasures         = True
-        if buildChip:
-            #default path is the installation pdk one: pdks/sky130_c4m/4M.Sky130/libs.tech/
-            conf.cfg.harness.path            = harnessProjectDir + '/user_project_wrapper.def'
         conf.editor              = editor
         conf.ioPinsInTracks      = True
         conf.useSpares           = True

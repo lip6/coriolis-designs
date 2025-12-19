@@ -30,27 +30,52 @@
  
 
  declare -A benchRules
+ benchRules["picorv32/nsx2"]="gds"
  benchRules["picorv32/sky130_c4m"]="gds"
  benchRules["picorv32/ihpsg13g2_c4m"]="gds"
  benchRules["picorv32/gf180mcu_gf"]="${gf180rule}"
  benchRules["picorv32/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["arlet6502/original/nsx2"]="gds"
+ benchRules["arlet6502/original/sky130_c4m"]="gds"
+ benchRules["arlet6502/original/ihpsg13g2_c4m"]="gds"
+ benchRules["arlet6502/original/gf180mcu_gf"]="${gf180rule}"
+ benchRules["arlet6502/original/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["arlet6502/fixed/nsx2"]="gds"
+ benchRules["arlet6502/fixed/sky130_c4m"]="gds"
+ benchRules["arlet6502/fixed/ihpsg13g2_c4m"]="gds"
+ benchRules["arlet6502/fixed/gf180mcu_gf"]="${gf180rule}"
+ benchRules["arlet6502/fixed/gf180mcu_c4m"]="${gf180rule}"
 
  benchsSet1=""
  benchsSet2=""
  benchsSet3=""
  benchsSet4=""
+ benchsSet5=""
 
  if [ -e "../coriolis-pdk-sky130-c4m" ]; then
+   benchsSet1="${benchsSet1} arlet6502/original/sky130_c4m"
+   benchsSet1="${benchsSet1} arlet6502/fixed/sky130_c4m"
    benchsSet1="${benchsSet1} picorv32/sky130_c4m"
  fi
  if [ -e "../coriolis-pdk-gf180mcu" ]; then
+   benchsSet2="${benchsSet2} arlet6502/original/gf180mcu_gf"
+   benchsSet2="${benchsSet2} arlet6502/fixed/gf180mcu_gf"
    benchsSet2="${benchsSet2} picorv32/gf180mcu_gf"
  fi
  if [ -e "../coriolis-pdk-gf180mcu-c4m" ]; then
+   benchsSet3="${benchsSet3} arlet6502/original/gf180mcu_c4m"
+   benchsSet3="${benchsSet3} arlet6502/fixed/gf180mcu_c4m"
    benchsSet3="${benchsSet3} picorv32/gf180mcu_c4m"
  fi
  if [ -e "../coriolis-pdk-ihpsg13g2-c4m" ]; then
+   benchsSet4="${benchsSet4} arlet6502/original/ihpsg13g2_c4m"
+   benchsSet4="${benchsSet4} arlet6502/fixed/ihpsg13g2_c4m"
    benchsSet4="${benchsSet4} picorv32/ihpsg13g2_c4m"
+ fi
+ if [ -e "../coriolis-pdk-nsx2" ]; then
+   benchsSet5="${benchsSet5} arlet6502/original/nsx2"
+   benchsSet5="${benchsSet5} arlet6502/fixed/nsx2"
+  #benchsSet5="${benchsSet5} picorv32/nsx2"
  fi
 
  crlenv="`pwd`/bin/crlenv.py"
@@ -162,7 +187,7 @@
    timedRunSet 2 &
    timedRunSet 3 &
    timedRunSet 4 &
-  #timedRunSet 5 &
+   timedRunSet 5 &
    wait
    echo "${hline}"
    echo ""
@@ -170,7 +195,7 @@
    if [ -e "`pwd`/runset-2.failed" ]; then exit 1; fi
    if [ -e "`pwd`/runset-3.failed" ]; then exit 1; fi
    if [ -e "`pwd`/runset-4.failed" ]; then exit 1; fi
-  #if [ -e "`pwd`/runset-5.failed" ]; then exit 1; fi
+   if [ -e "`pwd`/runset-5.failed" ]; then exit 1; fi
  else
    runSet ${runSetId}
  fi

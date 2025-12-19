@@ -41,9 +41,7 @@ def scriptMain ( **kw ):
         #    print( '"{}" {}'.format(cell.getName(),cell) )
         #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'arlet6502', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( 'arlet6502' )
+        cell = CRL.Blif.load( 'arlet6502' )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
@@ -82,7 +80,6 @@ def scriptMain ( **kw ):
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'
-        conf.chipConf.ioPadGauge = 'LEF.IO_Site'
         conf.coreToChipClass     = CoreToChip
         conf.coreSize            = conf.computeCoreSize( 35*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u(16*85 + 2*260.0 + 40.0), u(18*85 + 2*260.0) )

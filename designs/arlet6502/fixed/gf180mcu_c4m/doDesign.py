@@ -20,6 +20,8 @@ buildChip = False
 
 
 def scriptMain ( **kw ):
+    global af, buildChip
+
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
         cfg.misc.catchCore              = False
@@ -32,20 +34,6 @@ def scriptMain ( **kw ):
         cfg.misc.minTraceLevel          = 16000
         cfg.misc.maxTraceLevel          = 17000
 
-    global af, buildChip
-    hpitch       = 0
-    gaugeName    = Cfg.getParamString('anabatic.routingGauge').asString()
-    routingGauge = af.getRoutingGauge( gaugeName )
-    for layerGauge in routingGauge.getLayerGauges():
-        if layerGauge.getType() in [ CRL.RoutingLayerGauge.PinOnly
-                                   , CRL.RoutingLayerGauge.Unusable
-                                   , CRL.RoutingLayerGauge.BottomPowerSupply ]:
-            continue
-        if layerGauge.getDirection() == CRL.RoutingLayerGauge.Horizontal:
-            hpitch = layerGauge.getPitch()
-            break
-    sliceHeight = af.getCellGauge().getSliceHeight()
-
     rvalue = True
     try:
         #setTraceLevel( 550 )
@@ -53,9 +41,7 @@ def scriptMain ( **kw ):
         #    print( '"{}" {}'.format(cell.getName(),cell) )
         #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'arlet6502', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( 'arlet6502' )
+        cell = CRL.Blif.load( 'arlet6502' )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
@@ -109,61 +95,57 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH, None, 'a_14'       , 'a(14)'  , 'A(14)'  )
                      , (IoPin.NORTH, None, 'a_15'       , 'a(15)'  , 'A(15)'  )
                      ]
-        ioPinsSpec = [ (IoPin.WEST |IoPin.A_BEGIN, 'di({})'  ,    4*hpitch, 4*10*hpitch,  8)
-                     , (IoPin.WEST |IoPin.A_BEGIN, 'do({})'  , 14*4*10*hpitch, 4*10*hpitch,  8)
-                     , (IoPin.EAST |IoPin.A_BEGIN, 'a({})'   ,    4*hpitch, 4*10*hpitch, 16)
-                     
-                    , (IoPin.NORTH|IoPin.A_BEGIN, 'clk'     , 10*hpitch,      0 ,  1)
-                     , (IoPin.NORTH|IoPin.A_BEGIN, 'irq'     , 11*hpitch,      0 ,  1)
-                     , (IoPin.NORTH|IoPin.A_BEGIN, 'nmi'     , 12*hpitch,      0 ,  1)
-                     , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'     , 13*hpitch,      0 ,  1)
-                     , (IoPin.NORTH|IoPin.A_BEGIN, 'we'      , 14*hpitch,      0 ,  1)
-                    , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 15*hpitch,      0 ,  1)
+        ioPinsSpec = [ (IoPin.WEST |IoPin.A_BEGIN, 'di({})',    4   , 4*10,  8)
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'do({})', 14*4*10, 4*10,  8)
+                     , (IoPin.EAST |IoPin.A_BEGIN, 'a({})' ,    4   , 4*10, 16)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'clk'   , 10     , 0   ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'irq'   , 11     , 0   ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'nmi'   , 12     , 0   ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'   , 13     , 0   ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'we'    , 14     , 0   ,  1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'reset' , 15     , 0   ,  1)
                      ]
        #ioPinsSpec = []
-        designConf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
-        designConf.cfg.etesian.bloat               = 'disabled'
-       #designConf.cfg.etesian.bloat               = 'nsxlib'
-        designConf.cfg.etesian.densityVariation    = 0.05
-        designConf.cfg.etesian.aspectRatio         = 1.0
+        conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
+        conf.cfg.etesian.bloat               = 'disabled'
+       #conf.cfg.etesian.bloat               = 'nsxlib'
+        conf.cfg.etesian.densityVariation    = 0.05
+        conf.cfg.etesian.aspectRatio         = 1.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
-       #designConf.cfg.etesian.spaceMargin         = 0.10
-       #designConf.cfg.anabatic.searchHalo         = 2
-        designConf.cfg.anabatic.globalIterations   = 6
-        designConf.cfg.katana.hTracksReservedLocal = 6
-        designConf.cfg.katana.vTracksReservedLocal = 3
-        designConf.cfg.katana.hTracksReservedMin   = 4
-        designConf.cfg.katana.vTracksReservedMin   = 5
-        designConf.cfg.katana.trackFill            = 0
-        designConf.cfg.katana.runRealignStage      = True
-        designConf.cfg.block.spareSide             = 16*sliceHeight
-        designConf.cfg.chip.padCoreSide            = 'North'
-       #designConf.cfg.chip.use45corners           = False
-       #designConf.cfg.chip.useAbstractPads        = True
-        designConf.cfg.chip.supplyRailWidth        = l(250.0)
-        designConf.cfg.chip.supplyRailPitch        = l(450.0)
-        designConf.editor              = editor
-        designConf.useSpares           = True
-        designConf.useHFNS             = False
-        designConf.bColumns            = 2
-        designConf.bRows               = 2
-        designConf.chipName            = 'chip'
-        designConf.chipConf.ioPadGauge = 'LEF.GF_IO_Site'
-        designConf.coreToChipClass     = CoreToChip
-        designConf.coreSize            = (  45*sliceHeight,  45*sliceHeight )
-        designConf.chipSize            = ( 140*sliceHeight, 140*sliceHeight )
+       #conf.cfg.etesian.spaceMargin         = 0.10
+       #conf.cfg.anabatic.searchHalo         = 2
+        conf.cfg.anabatic.globalIterations   = 6
+        conf.cfg.katana.hTracksReservedLocal = 6
+        conf.cfg.katana.vTracksReservedLocal = 3
+        conf.cfg.katana.hTracksReservedMin   = 4
+        conf.cfg.katana.vTracksReservedMin   = 5
+        conf.cfg.katana.trackFill            = 0
+        conf.cfg.katana.runRealignStage      = True
+        conf.cfg.block.spareSide             = 16*conf.sliceHeight
+       #conf.cfg.chip.supplyRailWidth        = l(250.0)
+       #conf.cfg.chip.supplyRailPitch        = l(450.0)
+        conf.editor              = editor
+        conf.ioPinsInTracks      = True
+        conf.useSpares           = True
+        conf.useHFNS             = False
+        conf.bColumns            = 2
+        conf.bRows               = 2
+        conf.chipName            = 'chip'
+        conf.coreToChipClass     = CoreToChip
+        conf.coreSize            = conf.computeCoreSize( 45*conf.sliceHeight, 1.0 )
+        conf.chipSize            = ( 140*conf.sliceHeight, 140*conf.sliceHeight )
         if buildChip:
-            designConf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'reset_from_pad' )
-            chipBuilder = Chip( designConf )
+            conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'reset_from_pad' )
+            chipBuilder = Chip( conf )
             chipBuilder.doChipNetlist()
             chipBuilder.doChipFloorplan()
             rvalue = chipBuilder.doPnR()
             chipBuilder.save()
         else:
-            designConf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-            designConf.useHTree( 'reset' )
-            blockBuilder = Block( designConf )
+            conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
+            conf.useHTree( 'reset' )
+            blockBuilder = Block( conf )
             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
