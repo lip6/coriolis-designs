@@ -59,7 +59,7 @@ if doDesign.buildChip:
 else:
     TasYagle.ClockName = 'clk'
     # Rule for block generation.
-    rulePnR = PnR.mkRule( 'pnr'    , [ 'picorv32_cts_r.gds'
+    rulePnR = PnR.mkRule( 'gds'    , [ 'picorv32_cts_r.gds'
                                      , 'picorv32_cts_r.vst'
                                      , 'picorv32_cts_r.spi' ]
                                      , [ruleYosys]

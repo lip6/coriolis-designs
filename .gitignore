@@ -18,6 +18,7 @@ perf.data
 *.katana.dat
 *.histogram.dat
 *.histogram.plt
+*.blif
 
 *_r.*
 *.lyrdb
