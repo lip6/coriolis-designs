@@ -38,6 +38,8 @@ PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'picorv32'
 doDesign.buildChip = False
+#drcFlags           = DRC.SHOW_ERRORS
+drcFlags           = 0
 
 if doDesign.buildChip:
     pnrFiles = [ 'chip_r.gds'
@@ -70,7 +72,7 @@ staLayout = rulePnR.file_target( 2 )
 ruleSTA     = STA     .mkRule( 'sta'     , staLayout )
 ruleXTas    = XTas    .mkRule( 'xtas'    , ruleSTA.file_target(0) )
 ruleGds     = Alias   .mkRule( 'gds'     , [rulePnR] )
-ruleDRC     = DRC     .mkRule( 'drc'     , [rulePnR], DRC.GF180MCU_C|DRC.SHOW_ERRORS|DRC.ANTENNA )
+ruleDRC     = DRC     .mkRule( 'drc'     , [rulePnR], DRC.GF180MCU_C|DRC.ANTENNA|drcFlags )
 ruleCgt     = PnR     .mkRule( 'cgt'     )   
 ruleKlayout = Klayout .mkRule( 'klayout' )
 ruleClean   = Clean   .mkRule()

@@ -33,6 +33,8 @@ topName            = 'jpeg_encoder'
 topName            = 'mac'
 topName            = 'uart_rx'
 topName            = 'counter'
+#drcFlags           = DRC.SHOW_ERRORS
+drcFlags           = 0
 if doDesign.buildChip:
     pnrFiles = [ 'chip_r.gds'
                , 'chip_r.vst'
@@ -60,7 +62,7 @@ ruleYosys   = Yosys   .mkRule( 'yosys'   , f'{topName}.v' )
 ruleB2V     = Blif2Vst.mkRule( 'b2v'     , f'{topName}.vst', [ruleYosys], flags=0 )
 rulePnR     = PnR     .mkRule( 'pnr'     , pnrFiles, [ruleYosys], doDesign.scriptMain )
 ruleGds     = Alias   .mkRule( 'gds'     , [rulePnR] )
-ruleDRC     = DRC     .mkRule( 'drc'     , [rulePnR], DRC.GF180MCU_C|DRC.SHOW_ERRORS|DRC.ANTENNA )
+ruleDRC     = DRC     .mkRule( 'drc'     , [rulePnR], DRC.GF180MCU_C|DRC.ANTENNA|drcFlags )
 staLayout = rulePnR.file_target( 2 )
 ruleSTA     = STA     .mkRule( 'sta'    , staLayout )
 ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )

@@ -75,7 +75,7 @@
  if [ -e "../coriolis-pdk-nsx2" ]; then
    benchsSet5="${benchsSet5} arlet6502/original/nsx2"
    benchsSet5="${benchsSet5} arlet6502/fixed/nsx2"
-  #benchsSet5="${benchsSet5} picorv32/nsx2"
+   benchsSet5="${benchsSet5} picorv32/nsx2"
  fi
 
  crlenv="`pwd`/bin/crlenv.py"

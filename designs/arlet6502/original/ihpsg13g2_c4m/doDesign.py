@@ -117,7 +117,7 @@ def scriptMain ( **kw ):
        # etesian.spaceMargin is ignored if the coreSize is directly set.
        #conf.cfg.etesian.spaceMargin         = 0.10
        #conf.cfg.anabatic.searchHalo         = 2
-        conf.cfg.anabatic.globalIterations   = 10
+        conf.cfg.anabatic.globalIterations   = 20
         conf.cfg.katana.maxFlatEdgeOverflow  = 30
         conf.cfg.katana.hTracksReservedLocal = 15
         conf.cfg.katana.vTracksReservedLocal = 20

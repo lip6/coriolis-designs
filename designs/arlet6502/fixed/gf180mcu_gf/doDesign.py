@@ -69,12 +69,12 @@ def scriptMain ( **kw ):
        #conf.cfg.anabatic.searchHalo         = 2
        #conf.cfg.anabatic.globalIterations   = 6
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
-       #conf.cfg.katana.hTracksReservedLocal = 7
-        conf.cfg.katana.vTracksReservedLocal = 8
-       #conf.cfg.katana.hTracksReservedMin   = 5
-       #conf.cfg.katana.vTracksReservedMin   = 6
+        conf.cfg.katana.hTracksReservedLocal = 10
+        conf.cfg.katana.vTracksReservedLocal = 12
+        conf.cfg.katana.hTracksReservedMin   = 7
+        conf.cfg.katana.vTracksReservedMin   = 9
         conf.cfg.katana.trackFill            = 0
-        conf.cfg.katana.runRealignStage      = False
+        conf.cfg.katana.runRealignStage      = True
         conf.cfg.block.spareSide             = 8*conf.sliceHeight
         conf.coreToChipClass     = CoreToChip
         conf.editor              = editor
@@ -84,7 +84,7 @@ def scriptMain ( **kw ):
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'
-        conf.coreSize            = conf.computeCoreSize( 45*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 43*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( 350*conf.sliceHeight, 350*conf.sliceHeight )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -105,8 +105,7 @@ def scriptMain ( **kw ):
         rvalue = False
     sys.stdout.flush()
     sys.stderr.flush()
-    #return rvalue
-    return True
+    return rvalue
 
 
 if __name__ == '__main__':

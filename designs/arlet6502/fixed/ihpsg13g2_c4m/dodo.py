@@ -24,11 +24,11 @@ from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
 reuseBlif          = get_var( 'reuse-blif', None )
+showDrc            = get_var( 'show-drc'  , None )
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'arlet6502'
-#drcFlags           = DRC.SHOW_ERRORS
-drcFlags           = 0
+drcFlags           = DRC.SHOW_ERRORS if showDrc else 0
 doDesign.buildChip = False
 
 if reuseBlif:
