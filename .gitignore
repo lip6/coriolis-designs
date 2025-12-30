@@ -6,6 +6,7 @@
 *.noGit
 *.nogit
 .doit.db*
+*.failed
 
 patchs/
 tmp/
@@ -19,6 +20,7 @@ perf.data
 *.histogram.dat
 *.histogram.plt
 *.blif
+**/coriolis2/SU-LIP6/
 
 *_r.*
 *.lyrdb
