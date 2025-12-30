@@ -26,8 +26,7 @@ import doDesign
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'counter'
-#drcFlags           = DRC.SHOW_ERRORS
-drcFlags           = 0
+drcFlags           = DRC.NoDensity
 
 ruleYosys = Yosys   .mkRule( 'yosys', f'{topName}.v' )
 ruleB2V   = Blif2Vst.mkRule( 'b2v'  , f'{topName}.vst', [ruleYosys], flags=0 )
@@ -66,9 +65,7 @@ else:
                                    , Lvx.MergeSupply|Lvx.Flatten )
     staLayout = rulePnR.file_target( 2 )
 
-ruleDrcMin  = DRC    .mkRule( 'drc_min', rulePnR.file_target(0), drcFlags|DRC.Minimal )
-ruleDrcMax  = DRC    .mkRule( 'drc_max', rulePnR.file_target(0), drcFlags|DRC.Maximal )
-ruleDrcC4M  = DRC    .mkRule( 'drc_c4m', rulePnR.file_target(0), drcFlags|DRC.C4M )
+ruleDrc     = DRC    .mkRule( 'drc'    , rulePnR.file_target(0), drcFlags )
 ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
 ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
 ruleCgt     = PnR    .mkRule( 'cgt' )

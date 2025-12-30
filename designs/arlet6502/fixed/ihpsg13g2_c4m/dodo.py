@@ -24,12 +24,11 @@ from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
 reuseBlif          = get_var( 'reuse-blif', None )
-showDrc            = get_var( 'show-drc'  , None )
+drcFlags           = DRC.NoDensity
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'arlet6502'
-drcFlags           = DRC.SHOW_ERRORS if showDrc else 0
-doDesign.buildChip = False
+doDesign.buildChip = True if get_var('build-chip',False) else False
 
 if reuseBlif:
     ruleYosys = Copy.mkRule( 'yosys', 'arlet6502.blif', f'./non_generateds/arlet6502.{reuseBlif}.blif' )
@@ -70,11 +69,9 @@ else:
                                    , Lvx.MergeSupply|Lvx.Flatten )
     staLayout = rulePnR.file_target( 2 )
 
-ruleDrcMin  = DRC    .mkRule( 'drc_min', rulePnR.file_target(0), drcFlags|DRC.Minimal )
-ruleDrcMax  = DRC    .mkRule( 'drc_max', rulePnR.file_target(0), drcFlags|DRC.Maximal )
-ruleDrcC4M  = DRC    .mkRule( 'drc_c4m', rulePnR.file_target(0), drcFlags|DRC.C4M )
-ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
-ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
+ruleDrc     = DRC    .mkRule( 'drc' , rulePnR.file_target(0), drcFlags )
+ruleSTA     = STA    .mkRule( 'sta' , staLayout )
+ruleXTas    = XTas   .mkRule( 'xtas', ruleSTA.file_target(0) )
 ruleCgt     = PnR    .mkRule( 'cgt' )
 ruleKlayout = Klayout.mkRule( 'klayout', depends=rulePnR.file_target(0) )
 ruleClean   = Clean  .mkRule( [ 'lefRWarning.log', 'cgt.log' ] )

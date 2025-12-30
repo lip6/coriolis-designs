@@ -29,8 +29,7 @@ PnR.textMode = True
 reuseBlif    = get_var( 'reuse-blif', None )
 pnrSuffix    = '_cts_r'
 topName      = 'picorv32'
-#drcFlags     = DRC.SHOW_ERRORS
-drcFlags     = 0
+drcFlags     = DRC.NoDensity
 
 if reuseBlif:
     ruleYosys = Copy.mkRule( 'yosys', 'picorv32.blif', './non_generateds/picorv32.{}.blif'.format( reuseBlif ))
@@ -71,9 +70,7 @@ else:
                                    , Lvx.MergeSupply|Lvx.Flatten )
     staLayout = rulePnR.file_target( 2 )
 
-ruleDrcMin  = DRC    .mkRule( 'drc_min', rulePnR.file_target(0), drcFlags|DRC.Minimal )
-ruleDrcMax  = DRC    .mkRule( 'drc_max', rulePnR.file_target(0), drcFlags|DRC.Maximal )
-ruleDrcC4M  = DRC    .mkRule( 'drc_c4m', rulePnR.file_target(0), drcFlags|DRC.C4M )
+ruleDrc     = DRC    .mkRule( 'drc'    , rulePnR.file_target(0), drcFlags )
 ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
 ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
 ruleCgt     = PnR    .mkRule( 'cgt' )
