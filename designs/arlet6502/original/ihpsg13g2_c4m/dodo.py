@@ -30,7 +30,7 @@ showDrc            = get_var( 'show-drc'  , None )
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'arlet6502'
-drcFlags           = DRC.NoDensity
+drcFlags           = DRC.NoDensity|DRC.Antenna
 doDesign.buildChip = True if get_var('build-chip',False) else False 
 
 if reuseBlif:
