@@ -2,7 +2,7 @@
 from doit             import get_var
 from coriolis         import Cfg 
 from coriolis.helpers import overlay
-from pdks.gf180mcu    import setup
+from pdks.gf180mcu    import setup, getDftStdCells
 setup( useHV=True )
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -22,11 +22,12 @@ from coriolis.designflow.alias    import Alias
 from coriolis.designflow.clean    import Clean
 from pdks.gf180mcu.designflow.drc import DRC
 import doDesign
-
 reuseBlif          = get_var( 'reuse-blif', None )
 showDrc            = get_var( 'show-drc'  , None )
 PnR.textMode       = True
 doDesign.buildChip = False
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 drcFlags           = DRC.SHOW_ERRORS if showDrc else 0
 
 

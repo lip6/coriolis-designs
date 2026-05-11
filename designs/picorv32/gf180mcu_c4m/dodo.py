@@ -3,7 +3,7 @@ import os
 from   doit              import get_var
 from   coriolis          import Cfg
 from   coriolis.helpers  import overlay
-from   pdks.gf180mcu_c4m import setup
+from   pdks.gf180mcu_c4m import setup, getDftStdCells
 
 def userSettings ():
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
@@ -32,12 +32,14 @@ from coriolis.designflow.clean    import Clean
 from coriolis.designflow.klayout  import Klayout, ShowDRC
 from pdks.gf180mcu.designflow.drc import DRC
 import doDesign
-
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 reuseBlif          = get_var( 'reuse-blif', None )
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'picorv32'
 doDesign.buildChip = False
+
 #drcFlags           = DRC.SHOW_ERRORS
 drcFlags           = 0
 

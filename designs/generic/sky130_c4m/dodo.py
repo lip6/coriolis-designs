@@ -1,4 +1,4 @@
-from pdks.sky130_c4m    import setup
+from pdks.sky130_c4m    import setup,getDftStdCells
 setup(  )
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -12,12 +12,15 @@ from coriolis.designflow.yosys    import Yosys
 from coriolis.designflow.blif2vst import Blif2Vst
 from coriolis.designflow.alias    import Alias
 from coriolis.designflow.clean    import Clean
+import doDesign
+from doDesign  import scriptMain
 PnR.textMode  = True
 
 
 topName ="counter"
 
-from doDesign  import scriptMain
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 
 ruleYosys = Yosys   .mkRule( 'yosys', f'{topName}.v' )
 ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ f'{topName}.vst' ]

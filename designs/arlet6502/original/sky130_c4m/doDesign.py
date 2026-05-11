@@ -19,11 +19,11 @@ from   pdks.sky130_c4m.core2chip.sky130     import CoreToChip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
-
+dft  = False
 
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
-    global af, buildChip
+    global af, buildChip, dft,dft_std_cells
 
     rvalue    = True
     gaugeName = None
@@ -105,6 +105,8 @@ def scriptMain ( **kw ):
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'     , 130, 0,  1)
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'we'      , 140, 0,  1)
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 150, 0,  1)
+                         # DFT connectors: SIN,SE,SOUT are automatically placed if
+                         #not explictely done.
                          ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.misc.catchCore              = False
@@ -140,6 +142,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreSize            = conf.computeCoreSize( 40*conf.sliceHeight, 1.0 )
+        #may increase area if DFT
         conf.chipSize            = ( u(2020.0), u(2060.0) )
         conf.coreToChipClass     = CoreToChip
         if buildChip:
@@ -159,7 +162,12 @@ def scriptMain ( **kw ):
             chipBuilder.save()
         else:
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

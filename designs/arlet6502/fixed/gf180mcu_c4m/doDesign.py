@@ -17,10 +17,12 @@ from   coriolis.plugins.chip.chip           import Chip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
+dft  = False
 
 
 def scriptMain ( **kw ):
-    global af, buildChip
+    global af, buildChip, dft,dft_std_cells
+
 
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
@@ -105,6 +107,14 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'we'    , 14     , 0   ,  1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'reset' , 15     , 0   ,  1)
                      ]
+       #Explicit placement of dft connectors is supported. If not defined,
+       #they are automatically added (optimized)
+        if dft:
+            ioPinsSpec += [
+                      (IoPin.NORTH|IoPin.A_BEGIN, 'SIN'     , 5,  0 , 1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'SOUT'   , 7,  0 , 1)
+                     , (IoPin.NORTH|IoPin.A_BEGIN, 'SE'   , 9,  0 , 1)]
+
        #ioPinsSpec = []
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.etesian.bloat               = 'disabled'
@@ -146,7 +156,12 @@ def scriptMain ( **kw ):
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
             conf.useHTree( 'reset' )
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

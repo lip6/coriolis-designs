@@ -3,7 +3,7 @@ from pathlib          import Path
 from doit             import get_var
 from coriolis         import Cfg 
 from coriolis.helpers import overlay
-from pdks.gf180mcu    import setup
+from pdks.gf180mcu    import setup, getDftStdCells
 
 
 setup( useHV=True )
@@ -25,7 +25,8 @@ from coriolis.designflow.alias    import Alias
 from coriolis.designflow.clean    import Clean
 from pdks.gf180mcu.designflow.drc import DRC
 import doDesign
-
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 reuseBlif          = get_var( 'reuse-blif', None )
 PnR.textMode       = True
 doDesign.buildChip = False

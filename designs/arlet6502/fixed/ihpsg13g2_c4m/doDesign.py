@@ -17,11 +17,12 @@ from   coriolis.plugins.chip.chip            import Chip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
+dft  = False
 
 
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
-    global af, buildChip
+    global af, buildChip,dft,dft_std_cells
     gaugeName = None
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
         cfg.misc.catchCore     = False
@@ -56,6 +57,8 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'     , 13*pinSpacing,          0 , 1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'we'      , 14*pinSpacing,          0 , 1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 15*pinSpacing,          0 , 1)
+                     #DFT pins: In DFT mode, SIN,SOUT and SE are placed
+                     #automatically if not specied.
                      ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.tramontana.mergeSupplies    = True
@@ -82,6 +85,8 @@ def scriptMain ( **kw ):
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
         conf.coreSize            = conf.computeCoreSize( 35*conf.sliceHeight, 1.0 )
+        #increase area if DFT
+        #conf.coreSize            = conf.computeCoreSize( 38*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u(16*85 + 2*260.0 + 40.0), u(18*85 + 2*260.0) )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -111,7 +116,12 @@ def scriptMain ( **kw ):
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
             conf.useHTree( 'reset' )
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else :
+                rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

@@ -18,10 +18,11 @@ from   coriolis.plugins.chip.chip           import Chip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
+dft  = False
 
 
 def scriptMain ( **kw ):
-    global af, buildChip
+    global af, buildChip, dft,dft_std_cells
 
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
 
@@ -57,8 +58,12 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'     , 13*16,  0 , 1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'we'      , 14*16,  0 , 1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 15*16,  0 , 1)
+                     # DFT connectors: SIN,SE,SOUT are automatically placed if
+                     #not explictely done.
+                     #,(IoPin.NORTH|IoPin.A_BEGIN, 'SIN'     , 0,  0 , 1)
+                     #, (IoPin.NORTH|IoPin.A_BEGIN, 'SOUT'   , 2,  0 , 1)
+                     #, (IoPin.NORTH|IoPin.A_BEGIN, 'SE'   , 10,  0 , 1)
                      ]
-        print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.etesian.bloat               = 'disabled'
        #conf.cfg.etesian.bloat               = 'nsxlib'
@@ -85,6 +90,8 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreSize            = conf.computeCoreSize( 44*conf.sliceHeight, 1.0 )
+        #increase area if DFT
+        #conf.coreSize            = conf.computeCoreSize( 51*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( 350*conf.sliceHeight, 350*conf.sliceHeight )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -98,7 +105,12 @@ def scriptMain ( **kw ):
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
             conf.useHTree( 'reset' )
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

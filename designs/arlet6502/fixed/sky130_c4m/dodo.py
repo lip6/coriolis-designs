@@ -1,6 +1,6 @@
 
 from doit            import get_var
-from pdks.sky130_c4m import setup
+from pdks.sky130_c4m import setup,getDftStdCells
 setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -20,6 +20,8 @@ import doDesign
 reuseBlif          = get_var( 'reuse-blif', None )
 PnR.textMode       = True
 doDesign.buildChip = False
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 
 
 if reuseBlif:

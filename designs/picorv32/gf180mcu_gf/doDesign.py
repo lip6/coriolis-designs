@@ -17,6 +17,7 @@ from   coriolis.plugins.chip.chip            import Chip
 from   pdks.gf180mcu.core2chip.gf180mcu      import CoreToChip
 
 buildChip = False
+dft  = False
 af        = CRL.AllianceFramework.get()
 
 
@@ -95,7 +96,10 @@ def scriptMain ( **kw ):
                          , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       , 138*hspace, 0, 1)
                          , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             , 139*hspace, 0, 1)
                          , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      , 140*hspace, 0, 1)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace-6, 0, 1)]
+                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace-6, 0, 1)
+                         # DFT connectors: SIN,SE,SOUT are automatically placed if
+                         #not explictely done.
+                         ]
             #connectors placement in block design
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.tramontana.mergeSupplies    = True
@@ -124,6 +128,7 @@ def scriptMain ( **kw ):
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
         conf.coreSize            = conf.computeCoreSize( 122*conf.sliceHeight, 1.0 )
+        #may increase area if DFT
         conf.chipSize            = ( u( 8*85 + 2*270.0), u( 8*85 + 2*300.0) )
         conf.doLvx               = 'corona'
         conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
@@ -138,7 +143,12 @@ def scriptMain ( **kw ):
             chipBuilder.save()
         else:
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

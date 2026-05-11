@@ -16,12 +16,12 @@ from   coriolis.plugins.chip.chip           import Chip
 
 
 af = CRL.AllianceFramework.get()
-
+dft  = False
 CoreName = 'arlet6502'
 
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
-    global af, CoreName
+    global af, CoreName,dft,dft_std_cells
     DbU.setStringMode( DbU.StringModeSymbolic )
     rvalue = True
     try:
@@ -44,6 +44,8 @@ def scriptMain ( **kw ):
                      , (IoPin.SOUTH|IoPin.A_BEGIN, 'rdy'   , 100*m2pitch,       0 ,  1)
                      , (IoPin.SOUTH|IoPin.A_BEGIN, 'we'    , 120*m2pitch,       0 ,  1)
                      , (IoPin.SOUTH|IoPin.A_BEGIN, 'reset' , 140*m2pitch,       0 ,  1)
+                     #DFT pins: In DFT mode, SIN,SOUT and SE are placed
+                     #automatically if not specied.
                      ]
         print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
@@ -63,10 +65,17 @@ def scriptMain ( **kw ):
         conf.useHFNS   = False
         conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
         conf.coreSize  = ( l( 3720.0), l( 3720.0) )
+        #increase area for DFT mode
+        #conf.coreSize  = ( l( 3820.0), l( 3820.0) )
         conf.editor    = editor
         blockBuilder   = Block( conf )
+        if dft:
+             if dft_std_cells is not None:
+                conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+        else:
+             rvalue = blockBuilder.doPnR()
         cell.setTerminalNetlist( False )
-        rvalue = blockBuilder.doPnR()
         blockBuilder.save()
     except Exception as e:
         catch( e )

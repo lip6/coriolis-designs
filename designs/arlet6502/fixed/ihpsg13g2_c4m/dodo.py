@@ -1,7 +1,7 @@
 
 import os
 from   doit               import get_var
-from   pdks.ihpsg13g2_c4m import setup
+from   pdks.ihpsg13g2_c4m import setup,getDftStdCells
 setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -23,6 +23,8 @@ from pdks.ihpsg13g2_c4m.designflow.sealring import SealRing
 from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 reuseBlif          = get_var( 'reuse-blif', None )
 drcFlags           = DRC.NoDensity
 PnR.textMode       = True

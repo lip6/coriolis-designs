@@ -13,56 +13,18 @@ from   coriolis.plugins.block.spares         import Spares
 from   pdks.ihpsg13g2_c4m.core2chip.sg13g2io import CoreToChip
 from   coriolis.plugins.chip.configuration   import ChipConf
 from   coriolis.plugins.chip.chip            import Chip
-from   coriolis.designflow.connectors_placement                 import *
 
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
-CoreName = 'picorv32'
+dft  = False
 CoreName = 'counter'
-def get_signals_hurricane(entity):
-# from coriolis.designflow.technos import setupSky130_c4m
-# from coriolis import CRL
-# setupSky130_c4m( '../../..', '../../../pdkmaster/C4M.Sky130' )
-# af = CRL.AllianceFramework.get()
- cell_blif  = CRL.Blif.load(f'{entity}.blif')
- #get supply pins not used in placement
- supply_pins = [j.getName() for j in cell_blif.getSupplyNets()]
- vectors = {}
- for i in cell_blif.getExternalNets():
-     #vector_name
-     a=i.getName()
-     vector = a.split('(')[0]
-     if vector in vectors:
-      #vector size
-      vectors[vector][1] += 1
-      #first bit of vector, it is 0 in most cases
-      vectors[vector][2]=min(vectors[vector][2],int(a.split(')')[0].split('(')[1]))
-     else:
-         supply = False
-         for s in supply_pins:
-             if vector == s:
-                 supply = True
-         if supply == False:
-             if '(' in a:
-              bit = int(a.split(')')[0].split('(')[1])
-             else: 
-              bit = 0   
-             vectors[vector] = [vector,1,bit]
- signals_sorted={}
- #In order to have a dictionnary with a number as key
- #usefull for sorting signals in other functions
- for i, key in enumerate(vectors):
-  signals_sorted[i] = vectors[key]
- return signals_sorted
-combinational =0
 
 
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
-    global af, buildChip
+    global af, buildChip,dft,dft_std_cells,CoreName
     gaugeName = None
-    dico = get_signals_hurricane(CoreName)
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
         cfg.misc.catchCore     = False
         cfg.misc.info          = False
@@ -81,26 +43,12 @@ def scriptMain ( **kw ):
         #    print( '"{}" {}'.format(cell.getName(),cell) )
         #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( f'{CoreName}', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( f'{CoreName}' )
+        cell = CRL.Blif.load( CoreName )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
         ioPadsSpec = []
-        pinSpacing = 10
         ioPinsSpec = []
-        h,v =  (30*pinSpacing, 30*pinSpacing)
-        pitch_id=['pinSpacing','pinSpacing', 'pinSpacing', 'pinSpacing']
-
-        L = generate_ioPinsSpec_list(pitch_id,dico,h,v,pinSpacing,pinSpacing)
-        M =[]
-        for i in range(len(L)):
-            S= L[i]
-            tup= (int(eval(S[0])),S[1],int(eval(S[2])),int(eval(S[3])),eval(S[4]))
-            M.append(tup)
-        ioPinsSpec =M 
-        print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.tramontana.mergeSupplies    = True
         conf.cfg.etesian.bloat               = 'disabled'
@@ -124,9 +72,10 @@ def scriptMain ( **kw ):
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'
-        conf.chipConf.ioPadGauge = 'LEF.IO_Site'
         conf.coreToChipClass     = CoreToChip
-        conf.coreSize            = conf.computeCoreSize( 35*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 20*conf.sliceHeight, 1.0 )
+        #increase area if DFT
+        #conf.coreSize            = conf.computeCoreSize( 38*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u(16*85 + 2*260.0 + 40.0), u(18*85 + 2*260.0) )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -154,9 +103,13 @@ def scriptMain ( **kw ):
             chipBuilder.save()
         else:
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-            #conf.useHTree( 'reset' )
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else :
+                rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

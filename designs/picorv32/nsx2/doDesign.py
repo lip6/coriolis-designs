@@ -15,6 +15,7 @@ from   coriolis.plugins.chip.configuration  import ChipConf
 from   coriolis.plugins.chip.chip           import Chip
 
 
+dft  = False
 af = CRL.AllianceFramework.get()
 
 CoreName = 'picorv32'
@@ -62,7 +63,10 @@ def scriptMain ( **kw ):
                      , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       ,  320*m1pitch, 0, range(0, 1))
                      , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             ,  324*m1pitch, 0, range(0, 1))
                      , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      ,  328*m1pitch, 0, range(0, 1))
-                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      ,  332*m1pitch, 0, range(0, 1))]
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      ,  332*m1pitch, 0, range(0, 1))
+                     # DFT connectors: SIN,SE,SOUT are automatically placed if
+                     #not explictely done.
+                     ]
         print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.anabatic.globalIterations   = 10
@@ -80,11 +84,17 @@ def scriptMain ( **kw ):
         conf.useSpares = True
         conf.useHFNS   = False
         conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
-        conf.coreSize =  ( l( 9800.0), l( 9800.0) )
+        conf.coreSize =  ( l( 9840.0), l( 9840.0) )
+        #may increase area if DFT
         conf.editor    = editor
         blockBuilder   = Block( conf )
+        if dft:
+         if dft_std_cells is not None:
+                conf.dft_std_cells = dft_std_cells
+         rvalue = blockBuilder.doPnRDFT()
+        else:
+         rvalue = blockBuilder.doPnR()
         cell.setTerminalNetlist( False )
-        rvalue = blockBuilder.doPnR()
         blockBuilder.save()
     except Exception as e:
         catch( e )

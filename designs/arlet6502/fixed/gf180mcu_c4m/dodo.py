@@ -3,7 +3,7 @@ import os
 from   doit              import get_var
 from   coriolis          import Cfg
 from   coriolis.helpers  import overlay
-from   pdks.gf180mcu_c4m import setup
+from   pdks.gf180mcu_c4m import setup, getDftStdCells
 
 
 def userSettings ():
@@ -40,6 +40,9 @@ PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'arlet6502'
 doDesign.buildChip = False
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
+
 #drcFlags           = DRC.SHOW_ERRORS
 drcFlags           = 0
 

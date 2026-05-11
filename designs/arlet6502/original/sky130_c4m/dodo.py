@@ -1,6 +1,6 @@
 
 from doit            import get_var
-from pdks.sky130_c4m import setup
+from pdks.sky130_c4m import setup, getDftStdCells
 setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -16,7 +16,8 @@ from coriolis.designflow.copy     import Copy
 from coriolis.designflow.alias    import Alias
 from coriolis.designflow.clean    import Clean
 import doDesign
-
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 reuseBlif          = get_var( 'reuse-blif', None )
 PnR.textMode       = True
 doDesign.buildChip = False

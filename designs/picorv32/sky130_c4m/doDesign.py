@@ -18,6 +18,7 @@ from   pdks.sky130_c4m.core2chip.sky130     import CoreToChip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
+dft  = False
 
 
 def scriptMain ( **kw ):
@@ -129,7 +130,10 @@ def scriptMain ( **kw ):
                          , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       , 138*hspace, 0, range(0, 1))
                          , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             , 139*hspace, 0, range(0, 1))
                          , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      , 140*hspace, 0, range(0, 1))
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace-5, 0, range(0, 1))]
+                         , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace-5, 0, range(0, 1))
+                         # DFT connectors: SIN,SE,SOUT are automatically placed if
+                         #not explictely done.
+                         ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.misc.catchCore              = False
         conf.cfg.misc.minTraceLevel          = 12300
@@ -169,6 +173,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreSize            = conf.computeCoreSize( 100*conf.sliceHeight, 1.0 )
+        #may increase area if DFT
         conf.chipSize            = ( u(   2020.0), u( 2060.0) )
         conf.coreToChipClass     = CoreToChip
         if buildChip:
@@ -188,7 +193,12 @@ def scriptMain ( **kw ):
             chipBuilder.save()
         else:
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

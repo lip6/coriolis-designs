@@ -17,6 +17,7 @@ from   coriolis.plugins.chip.chip           import Chip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
+dft  = False
 
 
 def scriptMain ( **kw ):
@@ -125,7 +126,10 @@ def scriptMain ( **kw ):
                      , (IoPin.WEST |IoPin.A_BEGIN, 'mem_ready'       , 138*hspace, 0, 1)
                      , (IoPin.WEST |IoPin.A_BEGIN, 'clk'             , 139*hspace, 0, 1)
                      , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_valid'      , 140*hspace, 0, 1)
-                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace, 0, 1)]
+                     , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      , 141*hspace, 0, 1)
+                     # DFT connectors: SIN,SE,SOUT are automatically placed if
+                     #not explictely done.
+                     ]
        #ioPinsSpec = []
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.etesian.bloat               = 'disabled'
@@ -151,6 +155,7 @@ def scriptMain ( **kw ):
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
         conf.coreSize            = conf.computeCoreSize( 86*conf.sliceHeight, 1.0 )
+        #may increase area if DFT
         conf.chipSize            = ( 140*conf.sliceHeight, 140*conf.sliceHeight )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -164,7 +169,12 @@ def scriptMain ( **kw ):
             conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
             conf.useHTree( 'resetn' )
             blockBuilder = Block( conf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

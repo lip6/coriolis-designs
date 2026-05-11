@@ -17,7 +17,7 @@ from   coriolis.plugins.chip.chip           import Chip
 
 af        = CRL.AllianceFramework.get()
 buildChip = False
-
+dft  = False
 
 def scriptMain ( **kw ):
     """The mandatory function to be called by Coriolis CGT/Unicorn."""
@@ -32,7 +32,7 @@ def scriptMain ( **kw ):
         cfg.misc.minTraceLevel          = 16000
         cfg.misc.maxTraceLevel          = 17000
 
-    global af, buildChip
+    global af, buildChip, dft,dft_std_cells
     hpitch       = 0
     gaugeName    = Cfg.getParamString('anabatic.routingGauge').asString()
     routingGauge = af.getRoutingGauge( gaugeName )
@@ -118,6 +118,8 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'rdy'     , 13*hpitch,      0 ,  1)
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'we'      , 14*hpitch,      0 ,  1)
                     , (IoPin.NORTH|IoPin.A_BEGIN, 'reset'   , 15*hpitch,      0 ,  1)
+                     # DFT connectors: SIN,SE,SOUT are automatically placed if
+                     #not explictely done.
                      ]
 
                #ioPinsSpec = []
@@ -151,6 +153,7 @@ def scriptMain ( **kw ):
         designConf.chipConf.ioPadGauge = 'LEF.GF_IO_Site'
         designConf.coreToChipClass     = CoreToChip
         designConf.coreSize            = (  45*sliceHeight,  45*sliceHeight )
+        #may increase area if DFT
         designConf.chipSize            = ( 140*sliceHeight, 140*sliceHeight )
         if buildChip:
             designConf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )
@@ -164,7 +167,12 @@ def scriptMain ( **kw ):
             designConf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )
             designConf.useHTree( 'reset' )
             blockBuilder = Block( designConf )
-            rvalue = blockBuilder.doPnR()
+            if dft:
+             if dft_std_cells is not None:
+                    conf.dft_std_cells = dft_std_cells
+             rvalue = blockBuilder.doPnRDFT()
+            else:
+             rvalue = blockBuilder.doPnR()
             blockBuilder.save()
     except Exception as e:
         catch( e )

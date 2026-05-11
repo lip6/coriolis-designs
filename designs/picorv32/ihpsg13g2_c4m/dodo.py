@@ -2,7 +2,7 @@
 import os
 from   pathlib import Path
 from   doit    import get_var
-from   pdks.ihpsg13g2_c4m import setup
+from   pdks.ihpsg13g2_c4m import setup, getDftStdCells
 
 setup()
 
@@ -24,7 +24,8 @@ from pdks.ihpsg13g2_c4m.designflow.filler   import Filler
 from pdks.ihpsg13g2_c4m.designflow.sealring import SealRing
 from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
-
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 PnR.textMode = True
 reuseBlif    = get_var( 'reuse-blif', None )
 pnrSuffix    = '_cts_r'

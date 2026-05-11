@@ -1,7 +1,7 @@
 
 import sys
 from   doit      import get_var
-from   pdks.nsx2 import setup
+from   pdks.nsx2 import setup,getDftStdCells
 setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
@@ -24,7 +24,8 @@ from coriolis.designflow.copy               import Copy
 from coriolis.designflow.clean              import Clean
 from coriolis.designflow.klayout            import DRC
 import doDesign
-
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
 reuseBlif    = get_var( 'reuse-blif', None )
 PnR.textMode = True
 topName      = 'arlet6502'

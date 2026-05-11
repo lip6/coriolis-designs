@@ -1,9 +1,8 @@
 
 import os
-from   pathlib import Path
-from   pdks.ihpsg13g2_c4m import setup
-
-setup( )
+from   doit               import get_var
+from   pdks.ihpsg13g2_c4m import setup,getDftStdCells
+setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
 
@@ -16,6 +15,7 @@ from coriolis.designflow.pnr                import PnR
 from coriolis.designflow.lvx                import Lvx
 from coriolis.designflow.x2y                import x2y
 from coriolis.designflow.tasyagle           import TasYagle, STA, XTas
+from coriolis.designflow.copy               import Copy
 from coriolis.designflow.alias              import Alias
 from coriolis.designflow.clean              import Clean
 from pdks.ihpsg13g2_c4m.designflow.filler   import Filler
@@ -23,13 +23,19 @@ from pdks.ihpsg13g2_c4m.designflow.sealring import SealRing
 from pdks.ihpsg13g2_c4m.designflow.drc      import DRC
 import doDesign
 
+doDesign.dft = False
+doDesign.dft_std_cells = getDftStdCells()
+reuseBlif          = get_var( 'reuse-blif', None )
+drcFlags           = DRC.NoDensity
 PnR.textMode       = True
 pnrSuffix          = '_cts_r'
 topName            = 'counter'
-drcFlags           = DRC.NoDensity
+doDesign.buildChip = True if get_var('build-chip',False) else False
 
-ruleYosys = Yosys   .mkRule( 'yosys', f'{topName}.v' )
-ruleB2V   = Blif2Vst.mkRule( 'b2v'  , f'{topName}.vst', [ruleYosys], flags=0 )
+if reuseBlif:
+    ruleYosys = Copy.mkRule( 'yosys', f'{topName}.blif', f'./non_generateds/{topName}.{reuseBlif}.blif' )
+else:
+    ruleYosys = Yosys.mkRule( 'yosys', f'{topName}.v' )
 
 if doDesign.buildChip:
     TasYagle.ClockName = 'clk_from_pad'
@@ -44,8 +50,8 @@ if doDesign.buildChip:
                                      , 'corona_cts_r.spi'
                                      , 'corona.vst'
                                      , 'corona.spi'
-                                     , f'{topName}.spi'
-                                     , f'{topName}.vst' ]
+                                     , f'{topName}_cts.spi'
+                                     , f'{topName}_cts.vst' ]
                                      , [ruleYosys, ruleSeal]
                                    , doDesign.scriptMain
                                    , topName=topName )
@@ -53,10 +59,10 @@ if doDesign.buildChip:
 else:
     TasYagle.ClockName = 'clk'
     # Rule for block generation.
-    rulePnR = PnR.mkRule( 'pnr'    , [ f'{topName}_cts_r.gds'
+    rulePnR = PnR.mkRule( 'gds'    , [ f'{topName}_cts_r.gds'
                                      , f'{topName}_cts_r.vst'
                                      , f'{topName}_cts_r.spi' ]
-                                     , [ruleB2V]
+                                     , [ruleYosys]
                                    , doDesign.scriptMain
                                    , topName=topName )
     ruleX2Y = x2y.mkRule( 'spi2vst', f'{topName}_cts_r_spi.vst', f'{topName}_cts_r.spi' )
@@ -65,9 +71,10 @@ else:
                                    , Lvx.MergeSupply|Lvx.Flatten )
     staLayout = rulePnR.file_target( 2 )
 
-ruleDrc     = DRC    .mkRule( 'drc'    , rulePnR.file_target(0), drcFlags )
-ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
-ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
+ruleDrc     = DRC    .mkRule( 'drc' , rulePnR.file_target(0), drcFlags )
+ruleSTA     = STA    .mkRule( 'sta' , staLayout )
+ruleXTas    = XTas   .mkRule( 'xtas', ruleSTA.file_target(0) )
 ruleCgt     = PnR    .mkRule( 'cgt' )
 ruleKlayout = Klayout.mkRule( 'klayout', depends=rulePnR.file_target(0) )
 ruleClean   = Clean  .mkRule( [ 'lefRWarning.log', 'cgt.log' ] )
+
