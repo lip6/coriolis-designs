@@ -75,4 +75,9 @@ ruleSTA     = STA    .mkRule( 'sta'    , staLayout )
 ruleXTas    = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
 ruleCgt     = PnR    .mkRule( 'cgt' )
 ruleKlayout = Klayout.mkRule( 'klayout', depends=rulePnR.file_target(0) )
-ruleClean   = Clean  .mkRule( [ 'lefRWarning.log', 'cgt.log' ] )
+ruleClean   = Clean  .mkRule( [ 'lefRWarning.log'
+                              , 'cgt.log'
+                              , 'arlet6502.vst'
+                              , 'arlet6502.spi'
+                              , 'arlet6502_cts.vst'
+                              , 'arlet6502_cts.spi' ] )

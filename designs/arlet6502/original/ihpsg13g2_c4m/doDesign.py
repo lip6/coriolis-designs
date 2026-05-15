@@ -110,6 +110,7 @@ def scriptMain ( **kw ):
                      ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
         conf.cfg.tramontana.mergeSupplies    = True
+        conf.cfg.etesian.graphics            = 3
         conf.cfg.etesian.bloat               = 'disabled'
        #conf.cfg.etesian.bloat               = 'nsxlib'
         conf.cfg.etesian.densityVariation    = 0.05

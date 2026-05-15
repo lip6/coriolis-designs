@@ -14,6 +14,62 @@
    printf "%u:%02u" $mins $secs
  }
 
+ toDeterministicLog ()
+ {
+   logFile="$1"
+   sed -E -e 's,.*/coriolis-2.x/,,' \
+          -e '/Cfg.so loaded/d'     \
+          -e '/[KMG]b$/d'           \
+          -e '/bytes$/d'            \
+          -e '/[[:digit:]]s$/d'     \
+          -e 's/0x[[:xdigit:]]{5,}\>/0xXXXXXXXX/g' \
+          -e 's/([[:digit:]]+ sec)/(X sec)/' \
+          -e '/^(\.)|(--) +fifo32$/d'        \
+          -e '/^(\.)|(--) +fifo32_u01$/d'    \
+          -e '/^(\.)|(--) +fifo72$/d'        \
+          -e '/^(\.)|(--) +fifo129$/d'       \
+          -e '/^(\.)|(--) +shifter$/d'       \
+          -e '/^(\.)|(--) +decod_model$/d'   \
+          -e '/^(\.)|(--) +arm_core$/d'      \
+          -e '/^(\.)|(--) +exec$/d'          \
+          -e '/^(\.)|(--) +ifetch_model$/d'  \
+          -e '/^(\.)|(--) +alu$/d'           \
+          -e '/^(\.)|(--) +mem$/d'           \
+          -e '/^(\.)|(--) +reg$/d'           \
+          -e '/^(\.)|(--) +exec_model$/d'    \
+          -e '/^(\.)|(--) +ifetch$/d'        \
+          -e '/^(\.)|(--) +decod$/d'         \
+          -e '/^(\.)|(--) +muxs$/d'          \
+          -e '/^(\.)|(--) +ram$/d'           \
+          -e '/^(\.)|(--) +accu$/d'          \
+          -e '/^(\.)|(--) +muxe$/d'          \
+          -e '/^(\.)|(--) +coeur$/d'         \
+          -e '/^End of script/d'    \
+          -e '/^Time spent/d'       \
+          -e 's/yosys-abc-[[:alnum:]]+/yosys-abc-XXXX/'  \
+          -e 's/^ABC: Memory = .*/ABC: Memory = DETER/'  \
+          -e 's/Time = .*/Time = DETER/' \
+          -i "${logFile}"
+ }
+
+ checkDeterminism ()
+ {
+   currentFile="$1"
+       refFile="`echo $currentFile | sed s,logs,logs.$2,`.gz"
+
+   if [ ! -f "$refFile" ]; then echo "N/A"; return; fi
+
+  #echo $currentFile $refFile
+
+   currentMD5=` cat $currentFile | md5sum | cut -f1 -d' '`
+       refMD5=`zcat $refFile     | md5sum | cut -f1 -d' '`
+
+  #echo $currentMD5 $refMD5
+   if [ "$currentMD5" != "$refMD5" ]; then echo "---"; return; fi
+   echo "DET"
+ }
+
+     refGittag="2c93175e6"
       runSetId="not_set"
       onGithub="false"
      gf180rule="gds"
@@ -144,7 +200,7 @@
      success="true"
      pushd ${benchDir} > /dev/null
      startTime="$SECONDS"
-     ${crlenv} -- doit clean_flow --extras >> ${benchLog} 2>&1
+     ${crlenv} -- doit clean_flow --extras > /dev/null 2>&1
      for rule in ${rules}; do
        ${crlenv} -- doit ${rule} reuse-blif=v58 >> ${benchLog} 2>&1
        if [ $? -ne 0 ]; then
@@ -162,12 +218,14 @@
      done
      ${crlenv} -- doit clean_flow --extras >> ${benchLog} 2>&1
      if [ "${success}" = "true" ]; then
+       toDeterministicLog ${benchLog}
+       deterministic=`checkDeterminism ${benchLog} ${refGittag}`
        printf "${statusLine}\n" "$setIdStr"  \
                                 $benchCount  \
                                 "<${bench}>" \
 				"`echo \"${rules}\" | sed 's/ /,/g'`" \
 				"`getRuntime $startTime`" \
-				"success"
+				"success+${deterministic}"
      fi
      popd > /dev/null
      benchCount=`expr ${benchCount} + 1`
