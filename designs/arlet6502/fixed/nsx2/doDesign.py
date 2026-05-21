@@ -28,7 +28,7 @@ def scriptMain ( **kw ):
        #setTraceLevel( 550 )
        #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = CRL.Blif.load( 'arlet6502' )
+        cell = CRL.Blif.load( 'arlet6502', CRL.Blif.EnforceVhdl )
         if editor:
             editor.setCell( cell ) 
         ioPadsSpec = []

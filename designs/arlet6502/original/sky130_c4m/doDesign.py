@@ -44,7 +44,7 @@ def scriptMain ( **kw ):
         cell, editor = plugins.kwParseMain( **kw )
         cellName = 'arlet6502'
         if buildChip: cellName += '_harness'
-        cell = CRL.Blif.load( 'arlet6502' )
+        cell = CRL.Blif.load( 'arlet6502', CRL.Blif.EnforceVhdl )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
