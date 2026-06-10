@@ -41,9 +41,7 @@ def scriptMain ( **kw ):
         #    print( '"{}" {}'.format(cell.getName(),cell) )
         #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'arlet6502', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( 'arlet6502' )
+        cell = CRL.Blif.load( 'arlet6502', CRL.Blif.EnforceVhdl )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )

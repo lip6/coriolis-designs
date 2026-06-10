@@ -97,9 +97,9 @@ def scriptMain ( **kw ):
                          ]
         else:
             ioPadsSpec = [ ]
-            ioPinsSpec = [ (IoPin.WEST |IoPin.A_BEGIN, 'di({})'  , 10, 10,  8)
-                         , (IoPin.WEST |IoPin.A_BEGIN, 'do({})'  , 15, 10,  8)
-                         , (IoPin.EAST |IoPin.A_BEGIN, 'a({})'   , 20, 15, 16)
+            ioPinsSpec = [ (IoPin.WEST |IoPin.A_BEGIN, 'di[{}]'  , 10, 10,  8)
+                         , (IoPin.WEST |IoPin.A_BEGIN, 'do[{}]'  , 15, 10,  8)
+                         , (IoPin.EAST |IoPin.A_BEGIN, 'a[{}]'   , 20, 15, 16)
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'clk'     , 100, 0,  1)
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'irq'     , 110, 0,  1)
                          , (IoPin.NORTH|IoPin.A_BEGIN, 'nmi'     , 120, 0,  1)
