@@ -70,9 +70,9 @@ def scriptMain ( **kw ):
        #conf.cfg.anabatic.globalIterations   = 6
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
         conf.cfg.katana.hTracksReservedLocal = 10
-        conf.cfg.katana.vTracksReservedLocal = 12
-        conf.cfg.katana.hTracksReservedMin   = 7
-        conf.cfg.katana.vTracksReservedMin   = 9
+        conf.cfg.katana.vTracksReservedLocal = 14
+        conf.cfg.katana.hTracksReservedMin   = 9
+        conf.cfg.katana.vTracksReservedMin   = 10
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = True
         conf.cfg.block.spareSide             = 8*conf.sliceHeight
