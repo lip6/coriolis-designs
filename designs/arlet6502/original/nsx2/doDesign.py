@@ -28,7 +28,7 @@ def scriptMain ( **kw ):
        #setTraceLevel( 550 )
        #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = CRL.Blif.load( CoreName )
+        cell = CRL.Blif.load( CoreName, CRL.Blif.EnforceVhdl )
         af.saveCell( cell, CRL.Catalog.State.Logical )
         if editor:
             editor.setCell( cell ) 

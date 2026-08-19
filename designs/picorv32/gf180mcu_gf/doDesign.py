@@ -54,9 +54,7 @@ def scriptMain ( **kw ):
             return True
 
         cell, editor = plugins.kwParseMain( **kw )
-        cell = af.getCell( 'picorv32', CRL.Catalog.State.Logical )
-        if not cell:
-            cell = CRL.Blif.load( 'picorv32' )
+        cell = CRL.Blif.load( 'picorv32' )
         if editor:
             editor.setCell( cell ) 
             editor.setDbuMode( DbU.StringModePhysical )
@@ -101,15 +99,16 @@ def scriptMain ( **kw ):
         conf.cfg.tramontana.mergeSupplies    = True
         conf.cfg.etesian.bloat               = 'disabled'
         conf.cfg.etesian.densityVariation    = 0.05
-        conf.cfg.etesian.aspectRatio         = 1.1
+        conf.cfg.etesian.aspectRatio         = 1.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
        #conf.cfg.etesian.spaceMargin         = 0.10
        #conf.cfg.anabatic.searchHalo         = 2
+        conf.cfg.anabatic.gcellAspectRatio   = 1.5
         conf.cfg.anabatic.globalIterations   = 15
         conf.cfg.katana.hTracksReservedLocal = 11
-        conf.cfg.katana.vTracksReservedLocal = 10
-        conf.cfg.katana.hTracksReservedMin   = 9
-        conf.cfg.katana.vTracksReservedMin   = 8
+        conf.cfg.katana.vTracksReservedLocal = 12
+        conf.cfg.katana.hTracksReservedMin   = 10
+        conf.cfg.katana.vTracksReservedMin   = 10
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = False
         conf.cfg.block.spareSide             = 8*conf.sliceHeight
@@ -123,7 +122,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
-        conf.coreSize            = conf.computeCoreSize( 122*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 124*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u( 8*85 + 2*270.0), u( 8*85 + 2*300.0) )
         conf.doLvx               = 'corona'
         conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )

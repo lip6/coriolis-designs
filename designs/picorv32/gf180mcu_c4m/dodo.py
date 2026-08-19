@@ -43,24 +43,17 @@ drcFlags           = 0
 
 if doDesign.buildChip:
     pnrFiles = [ 'chip_r.gds'
-               , 'chip_r.vst'
                , 'chip_r.spi'
-               , 'chip.vst'
                , 'chip.spi'
-               , 'corona_cts_r.vst'
                , 'corona_cts_r.spi'
-               , 'corona_r.vst'
                , 'corona_r.spi'
-               , 'corona.vst'
                , 'corona.spi'
-               , 'picorv32_cts.vst'
                , 'picorv32_cts.spi'
                , 'picorv32.spi'
                ]
 else:
     pnrFiles = [ 'picorv32_cts_r.gds'
                , 'picorv32_cts_r.spi'
-               , 'picorv32_cts_r.vst'
                ]
 
 if reuseBlif:
@@ -68,7 +61,7 @@ if reuseBlif:
 else:
     ruleYosys = Yosys.mkRule( 'yosys', 'picorv32.v' )
 rulePnR     = PnR     .mkRule( 'pnr'     , pnrFiles, [ruleYosys], doDesign.scriptMain )
-staLayout = rulePnR.file_target( 2 )
+staLayout = rulePnR.file_target( 1 )
 ruleSTA     = STA     .mkRule( 'sta'     , staLayout )
 ruleXTas    = XTas    .mkRule( 'xtas'    , ruleSTA.file_target(0) )
 ruleGds     = Alias   .mkRule( 'gds'     , [rulePnR] )

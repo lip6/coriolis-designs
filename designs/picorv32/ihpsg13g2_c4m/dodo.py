@@ -41,34 +41,24 @@ if doDesign.buildChip:
     # Rule for chip generation.
     ruleSeal  = SealRing.mkRule( 'sealring', targets=[ 'chip_r_seal.gds' ] , size=[2200.0, 2200.0] )
     rulePnR   = PnR.mkRule( 'gds'  , [ 'chip_r.gds'
-                                     , 'chip_r.vst'
                                      , 'chip_r.spi'
-                                     , 'chip.vst'
                                      , 'chip.spi'
-                                     , 'corona_cts_r.vst'
                                      , 'corona_cts_r.spi'
-                                     , 'corona.vst'
                                      , 'corona.spi'
-                                     , 'picorv32_cts.spi'
-                                     , 'picorv32_cts.vst' ]
+                                     , 'picorv32_cts.spi' ]
                                      , [ruleYosys, ruleSeal]
                                    , doDesign.scriptMain
                                    , topName=topName )
-    staLayout = rulePnR.file_target( 6 )
+    staLayout = rulePnR.file_target( 3 )
 else:
     TasYagle.ClockName = 'clk'
     # Rule for block generation.
     rulePnR = PnR.mkRule( 'gds'    , [ 'picorv32_cts_r.gds'
-                                     , 'picorv32_cts_r.vst'
                                      , 'picorv32_cts_r.spi' ]
                                      , [ruleYosys]
                                    , doDesign.scriptMain
                                    , topName=topName )
-    ruleX2Y = x2y.mkRule( 'spi2vst', 'picorv32_cts_r_spi.vst', 'picorv32_cts_r.spi' )
-    ruleLvx = Lvx.mkRule( 'lvx_spi', [ 'picorv32_cts_r.vst'
-                                     , 'picorv32_cts_r.spi' ]
-                                   , Lvx.MergeSupply|Lvx.Flatten )
-    staLayout = rulePnR.file_target( 2 )
+    staLayout = rulePnR.file_target( 1 )
 
 ruleDrc     = DRC    .mkRule( 'drc'    , rulePnR.file_target(0), drcFlags )
 ruleSTA     = STA    .mkRule( 'sta'    , staLayout )

@@ -8,6 +8,7 @@
 .doit.db*
 *.failed
 
+toCommit.lst
 patchs/
 tmp/
 ref_vst/

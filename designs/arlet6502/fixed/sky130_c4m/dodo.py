@@ -28,12 +28,11 @@ else:
     ruleYosys = Yosys.mkRule( 'yosys', 'arlet6502.v' )
 
 rulePnR   = PnR     .mkRule( 'pnr'  , [ 'arlet6502_cts_r.gds'
-                                      , 'arlet6502_cts_r.spi'
-                                      , 'arlet6502_cts_r.vst' ]
+                                      , 'arlet6502_cts_r.spi' ]
                                     , [ruleYosys]
                                     , doDesign.scriptMain )
 ruleCgt   = PnR    .mkRule( 'cgt' )
-staLayout = rulePnR.file_target( 2 )
+staLayout = rulePnR.file_target( 1 )
 ruleSTA   = STA    .mkRule( 'sta'    , staLayout )
 ruleXTas  = XTas   .mkRule( 'xtas'   , ruleSTA.file_target(0) )
 ruleGds   = Alias  .mkRule( 'gds', [rulePnR] )

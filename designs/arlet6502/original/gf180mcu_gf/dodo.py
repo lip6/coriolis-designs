@@ -35,24 +35,17 @@ drcFlags           = 0
 
 if doDesign.buildChip:
     pnrFiles = [ 'chip_r.gds'
-               , 'chip_r.vst'
                , 'chip_r.spi'
-               , 'chip.vst'
                , 'chip.spi'
-               , 'corona_cts_r.vst'
                , 'corona_cts_r.spi'
-               , 'corona_r.vst'
                , 'corona_r.spi'
-               , 'corona.vst'
                , 'corona.spi'
-               , 'arlet6502_cts.vst'
                , 'arlet6502_cts.spi'
                , 'arlet6502.spi'
                ]
 else:
     pnrFiles = [ 'arlet6502_cts_r.gds'
                , 'arlet6502_cts_r.spi'
-               , 'arlet6502_cts_r.vst'
                ]
 
 if reuseBlif:
@@ -61,7 +54,7 @@ else:
     ruleYosys = Yosys   .mkRule( 'yosys', 'arlet6502.v' )
 ruleB2V     = Blif2Vst.mkRule( 'b2v'     , 'arlet6502.vst', [ruleYosys], flags=0 )
 rulePnR     = PnR     .mkRule( 'pnr'     , pnrFiles, [ruleYosys], doDesign.scriptMain )
-staLayout = rulePnR.file_target( 2 )
+staLayout = rulePnR.file_target( 1 )
 #ruleSTA     = STA     .mkRule( 'sta'     , staLayout )
 #ruleXTas    = XTas    .mkRule( 'xtas'    , ruleSTA.file_target(0) )
 ruleGds     = Alias   .mkRule( 'gds'     , [rulePnR] )

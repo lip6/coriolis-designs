@@ -95,7 +95,7 @@ def scriptMain ( **kw ):
         conf.cfg.katana.hTracksReservedLocal = 16
         conf.cfg.katana.vTracksReservedLocal = 15
         conf.cfg.katana.hTracksReservedMin   = 8
-        conf.cfg.katana.vTracksReservedMin   = 6
+        conf.cfg.katana.vTracksReservedMin   = 7
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = True
         conf.cfg.block.spareSide             = 8*conf.sliceHeight
@@ -107,7 +107,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
-        conf.coreSize            = conf.computeCoreSize( 89*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 90*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u( 8*85 + 2*270.0), u( 8*85 + 2*300.0) )
         conf.doLvx               = 'corona'
         conf.useHTree( 'clk', Spares.HEAVY_LEAF_LOAD )

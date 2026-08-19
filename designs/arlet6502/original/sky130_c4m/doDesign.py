@@ -124,9 +124,9 @@ def scriptMain ( **kw ):
         conf.cfg.anabatic.globalIterations   = 10
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
         conf.cfg.katana.maxFlatEdgeOverflow  = 200
-        conf.cfg.katana.hTracksReservedMin   = 3
+        conf.cfg.katana.hTracksReservedMin   = 5
         conf.cfg.katana.vTracksReservedMin   = 5
-        conf.cfg.katana.hTracksReservedLocal = 6
+        conf.cfg.katana.hTracksReservedLocal = 7
         conf.cfg.katana.vTracksReservedLocal = 7
         conf.cfg.katana.globalRipupLimit     = 7
         conf.cfg.katana.runRealignStage      = False

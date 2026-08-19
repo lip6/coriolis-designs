@@ -28,7 +28,7 @@ def scriptMain ( **kw ):
        #setTraceLevel( 550 )
        #Breakpoint.setStopLevel( 100 )
         cell, editor = plugins.kwParseMain( **kw )
-        cell = CRL.Blif.load( 'picorv32' )
+        cell = CRL.Blif.load( 'picorv32', CRL.Blif.EnforceVhdl )
         if editor:
             editor.setCell( cell ) 
         ioPadsSpec = []

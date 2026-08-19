@@ -37,7 +37,9 @@ else:
 
 rulePnR = PnR.mkRule( 'gds', [ f'{topName}_cts_r.ap'
                              , f'{topName}_cts_r.vst'
-                             , f'{topName}_cts_r.spi' ]
+                             , f'{topName}_cts_r.spi'
+                             , f'{topName}.vst'
+                             ]
                            , [ruleYosys]
                            , doDesign.scriptMain
                            , topName=topName )
