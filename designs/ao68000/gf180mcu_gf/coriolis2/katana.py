@@ -77,4 +77,7 @@ from coriolis.Hurricane import DebugSession
 # Placed OK, but impact on 1139286 of n7437
 # <id:1249378 Vertical $abc$71324$new_n7006_hfns_1 Metal2 [675.08um 595.56um] ...> 
 #DebugSession.addToTrace( katana.getCell().getNet( '$abc$71324$new_n7006_hfns_1' ) )
-DebugSession.addToTrace( katana.getCell().getNet( '$abc$71324$new_n7437' ) )
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71324$new_n7437' ) )
+# [ERROR] AutoVertical::getConstraints(): Invalid interval [312.225um : 312.21um]
+#         on <id:1098472 Vertical $abc$71845$new_n4006 Metal3 [309.68um 667.8um] [309.68um 682.92um] 0.28       um rpD:2 bl:0 --u----G-----w---i-------- [667.52um:683.2um]>
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n4006' ) )
