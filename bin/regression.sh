@@ -115,6 +115,7 @@
  benchRules["arlet6502/fixed/ihpsg13g2_c4m"]="${ihpsg13g2rule}"
  benchRules["arlet6502/fixed/gf180mcu_gf"]="${gf180rule}"
  benchRules["arlet6502/fixed/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["ao68000/gf180mcu_gf"]="${gf180rule}"
 
  benchsSet1=""
  benchsSet2=""
@@ -131,6 +132,7 @@
    benchsSet2="${benchsSet2} arlet6502/original/gf180mcu_gf"
    benchsSet2="${benchsSet2} arlet6502/fixed/gf180mcu_gf"
    benchsSet2="${benchsSet2} picorv32/gf180mcu_gf"
+   benchsSet2="${benchsSet2} ao68000/gf180mcu_gf"
  fi
  if [ -e "${sitePackagesDir}/pdks/gf180mcu_c4m" ]; then
    benchsSet3="${benchsSet3} arlet6502/original/gf180mcu_c4m"
