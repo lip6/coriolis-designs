@@ -1,0 +1,38 @@
+
+from doit import get_var
+from pdks.sky130_c4m import setup
+
+setup()
+
+DOIT_CONFIG = { 'verbosity' : 2 }
+
+from coriolis.designflow.task     import Tasks
+from coriolis.designflow.pnr      import PnR
+from coriolis.designflow.copy     import Copy
+from coriolis.designflow.yosys    import Yosys
+from coriolis.designflow.blif2vst import Blif2Vst
+from coriolis.designflow.alias    import Alias
+from coriolis.designflow.clean    import Clean
+PnR.textMode = True
+reuseBlif    = get_var( 'reuse-blif', None )
+
+
+from doDesign  import scriptMain
+
+if reuseBlif:
+    ruleYosys = Copy.mkRule( 'yosys', 'ao68000.blif', './non_generateds/ao68000.{}.blif'.format( reuseBlif ))
+else:
+    ruleYosys = Yosys   .mkRule( 'yosys', 'ao68000.v' )
+ruleB2V   = Blif2Vst.mkRule( 'b2v'  , [ 'ao68000.vst' ]
+                                    , [ruleYosys]
+                                    , flags=0 )
+rulePnR   = PnR     .mkRule( 'pnr'  , [ 'ao68000_cts_r.gds'
+                                      , 'ao68000_cts_r.spi'
+                                      , 'ao68000_cts_r.vst' ]
+                                    , [ruleYosys]
+                                    , scriptMain )
+ruleCgt   = PnR     .mkRule( 'cgt' )
+ruleGds   = Alias   .mkRule( 'gds', [rulePnR] )
+ruleClean = Clean   .mkRule( [ 'ao68000.00.density.histogram.dat'
+                             , 'ao68000.00.density.histogram.plt'
+                             , 'ao68000.katana.dat' ] ) 

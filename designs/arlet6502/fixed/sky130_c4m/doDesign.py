@@ -125,10 +125,10 @@ def scriptMain ( **kw ):
         conf.cfg.anabatic.globalIterations   = 10
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
         conf.cfg.katana.maxFlatEdgeOverflow  = 200
-        conf.cfg.katana.hTracksReservedMin   = 5
-        conf.cfg.katana.vTracksReservedMin   = 6
-        conf.cfg.katana.hTracksReservedLocal = 8
-        conf.cfg.katana.vTracksReservedLocal = 9
+        conf.cfg.katana.hTracksReservedMin   = 7
+        conf.cfg.katana.vTracksReservedMin   = 7
+        conf.cfg.katana.hTracksReservedLocal = 9
+        conf.cfg.katana.vTracksReservedLocal = 10
         conf.cfg.katana.globalRipupLimit     = 7
         conf.cfg.katana.runRealignStage      = False
         conf.cfg.katana.dumpMeasures         = True
@@ -140,7 +140,7 @@ def scriptMain ( **kw ):
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'
-        conf.coreSize            = conf.computeCoreSize( 40*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 39*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u(2020.0), u(2060.0) )
         conf.coreToChipClass     = CoreToChip
         if buildChip:

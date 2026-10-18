@@ -28,9 +28,9 @@ def scriptMain ( **kw ):
         cfg.misc.info                   = False
         cfg.misc.paranoid               = False
         cfg.misc.bug                    = False
-        cfg.misc.logMode                = False
+        cfg.misc.logMode                = True
         cfg.misc.verboseLevel1          = True
-        cfg.misc.verboseLevel2          = False
+        cfg.misc.verboseLevel2          = True
         cfg.misc.minTraceLevel          = 16000
         cfg.misc.maxTraceLevel          = 17000
 
@@ -121,7 +121,7 @@ def scriptMain ( **kw ):
         conf.cfg.katana.vTracksReservedMin   = 5
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = True
-        conf.cfg.block.spareSide             = 16*conf.sliceHeight
+        conf.cfg.block.spareSide             = 8*conf.sliceHeight
        #conf.cfg.chip.supplyRailWidth        = l(250.0)
        #conf.cfg.chip.supplyRailPitch        = l(450.0)
         conf.editor              = editor
@@ -132,7 +132,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
-        conf.coreSize            = conf.computeCoreSize( 45*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 33*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( 140*conf.sliceHeight, 140*conf.sliceHeight )
         if buildChip:
             conf.useHTree( 'clk_from_pad', Spares.HEAVY_LEAF_LOAD )

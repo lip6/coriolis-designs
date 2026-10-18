@@ -101,6 +101,7 @@
 
  declare -A benchRules
  benchRules["picorv32/nsx2"]="gds"
+ benchRules["picorv32/cmos"]="lvx druc"
  benchRules["picorv32/sky130_c4m"]="gds"
  benchRules["picorv32/ihpsg13g2_c4m"]="${ihpsg13g2rule}"
  benchRules["picorv32/gf180mcu_gf"]="${gf180rule}"
@@ -110,12 +111,17 @@
  benchRules["arlet6502/original/ihpsg13g2_c4m"]="${ihpsg13g2rule}"
  benchRules["arlet6502/original/gf180mcu_gf"]="${gf180rule}"
  benchRules["arlet6502/original/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["arlet6502/fixed/cmos"]="lvx druc"
  benchRules["arlet6502/fixed/nsx2"]="gds"
  benchRules["arlet6502/fixed/sky130_c4m"]="gds"
  benchRules["arlet6502/fixed/ihpsg13g2_c4m"]="${ihpsg13g2rule}"
  benchRules["arlet6502/fixed/gf180mcu_gf"]="${gf180rule}"
  benchRules["arlet6502/fixed/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["arlet6502/fixed/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["ao68000/sky130_c4m"]="gds"
  benchRules["ao68000/gf180mcu_gf"]="${gf180rule}"
+ benchRules["ao68000/gf180mcu_c4m"]="${gf180rule}"
+ benchRules["ao68000/ihpsg13g2_c4m"]="${ihpsg13g2rule}"
 
  benchsSet1=""
  benchsSet2=""
@@ -123,10 +129,14 @@
  benchsSet4=""
  benchsSet5=""
 
+benchsSet1="${benchsSet1} arlet6502/fixed/cmos"
+benchsSet1="${benchsSet1} picorv32/cmos"
+
  if [ -e "${sitePackagesDir}/pdks/sky130_c4m" ]; then
    benchsSet1="${benchsSet1} arlet6502/original/sky130_c4m"
    benchsSet1="${benchsSet1} arlet6502/fixed/sky130_c4m"
    benchsSet1="${benchsSet1} picorv32/sky130_c4m"
+   benchsSet2="${benchsSet2} ao68000/sky130_c4m"
  fi
  if [ -e "${sitePackagesDir}/pdks/gf180mcu" ]; then
    benchsSet2="${benchsSet2} arlet6502/original/gf180mcu_gf"
@@ -138,11 +148,13 @@
    benchsSet3="${benchsSet3} arlet6502/original/gf180mcu_c4m"
    benchsSet3="${benchsSet3} arlet6502/fixed/gf180mcu_c4m"
    benchsSet3="${benchsSet3} picorv32/gf180mcu_c4m"
+   benchsSet3="${benchsSet3} ao68000/gf180mcu_c4m"
  fi
  if [ -e "${sitePackagesDir}/pdks/ihpsg13g2_c4m" ]; then
    benchsSet4="${benchsSet4} arlet6502/original/ihpsg13g2_c4m"
    benchsSet4="${benchsSet4} arlet6502/fixed/ihpsg13g2_c4m"
    benchsSet4="${benchsSet4} picorv32/ihpsg13g2_c4m"
+   benchsSet3="${benchsSet3} ao68000/ihpsg13g2_c4m"
  fi
  if [ -e "${sitePackagesDir}/pdks/nsx2" ]; then
    benchsSet5="${benchsSet5} arlet6502/original/nsx2"

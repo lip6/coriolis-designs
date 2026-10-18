@@ -16,7 +16,7 @@ def userSettings ():
         cfg.misc.verboseLevel2 = True
 
 userSettings()
-setup( )
+setup()
 
 DOIT_CONFIG = { 'verbosity' : 2 }
 
