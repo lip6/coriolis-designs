@@ -36,7 +36,7 @@ def scriptMain ( **kw ):
         #setTraceLevel( 540 )
         #for cell in af.getAllianceLibrary(1).getLibrary().getCells():
         #    print( '"{}" {}'.format(cell.getName(),cell) )
-        #Breakpoint.setStopLevel( 100 )
+        #Breakpoint.setStopLevel( 99 )
         cell, editor = plugins.kwParseMain( **kw )
         cell = CRL.Blif.load( 'ao68000' )
         if editor:
@@ -68,12 +68,13 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'DAT_O[{}]',    hspace, 4*hspace, 32 )
                      ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=[] ) 
+        conf.cfg.etesian.graphics            = 2
         conf.cfg.etesian.bloat               = 'disabled'
        #conf.cfg.etesian.bloat               = 'nsxlib'
         conf.cfg.etesian.densityVariation    = 0.05
         conf.cfg.etesian.aspectRatio         = 1.0
        #conf.cfg.etesian.densificationMode                = 'Targeted'  # 'Uniform' / 'Targeted' / 'Disabled
-        conf.cfg.etesian.densificationMode                = 'Old'
+        conf.cfg.etesian.densificationMode                = 'Uniform'
         conf.cfg.etesian.densificationTargetDensity       = 1.0
         conf.cfg.etesian.densificationMaxFactor           = 5.0
         conf.cfg.etesian.densificationNbRampSteps         = 1

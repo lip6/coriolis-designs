@@ -65,13 +65,13 @@ def scriptMain ( **kw ):
                      , (IoPin.WEST |IoPin.A_BEGIN, 'pcpi_ready'      ,  332*m1pitch, 0, range(0, 1))]
         print(ioPinsSpec)
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=ioPadsSpec ) 
-        conf.cfg.anabatic.globalIterations   = 10
+        conf.cfg.anabatic.globalIterations   = 20
         conf.cfg.anabatic.topRoutingLayer    = 'METAL5'
         conf.cfg.block.spareSide             = l(1000)
-        conf.cfg.katana.hTracksReservedMin   = 7
-        conf.cfg.katana.vTracksReservedMin   = 7
-        conf.cfg.katana.hTracksReservedLocal = 10
-        conf.cfg.katana.vTracksReservedLocal = 10
+        conf.cfg.katana.hTracksReservedMin   = 8
+        conf.cfg.katana.vTracksReservedMin   = 9
+        conf.cfg.katana.hTracksReservedLocal = 11
+        conf.cfg.katana.vTracksReservedLocal = 12
         conf.cfg.katana.termSatReservedLocal = 9 
         conf.cfg.katana.termSatThreshold     = 9 
         conf.cfg.katana.trackFill            = 0

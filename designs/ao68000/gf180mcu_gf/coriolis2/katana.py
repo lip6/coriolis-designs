@@ -81,3 +81,26 @@ from coriolis.Hurricane import DebugSession
 # [ERROR] AutoVertical::getConstraints(): Invalid interval [312.225um : 312.21um]
 #         on <id:1098472 Vertical $abc$71845$new_n4006 Metal3 [309.68um 667.8um] [309.68um 682.92um] 0.28       um rpD:2 bl:0 --u----G-----w---i-------- [667.52um:683.2um]>
 #DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n4006' ) )
+# Pb: <id:1051539 Vertical $abc$71845$new_n7469 Metal3 [351.96um 589.96um] ...> unrouted.
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n7469' ) )
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n7702' ) )
+# [ERROR] Overlap in <HorizontalTrack [1453] Metal2 @813.96um [-0.42um:886.34um] [449/512]> between:
+#   <id:1517331 Horizontal $abc$71845$new_n10975 Metal2 [40.6um 813.96um] [46.76um 813.96um] 0.28um rpD:1 bl:1 ------C-----W-A-------t--- [40.27um:47.09um] [40.27um:47.09um] 6.82um ------T-s->
+#   <id:1032862 Horizontal $abc$71845$new_n9600 Metal2 [41.39um 813.96um] [41.91um 813.96um] 0.28um rpD:1 bl:0 ---a--C-----W---------t--- [41.25um:42.05um] [41.25um:42.05um] 0.8um ------T--t>
+#   TargetU:47.09um SourceU:41.25um
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n10975' ) )
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n9600' ) )
+# [ERROR] Overlap in <HorizontalTrack [400] Metal2 @224.28um [-0.42um:886.34um] [441/512]> between:
+#   <id:1292139 Horizontal $abc$71845$new_n13251 Metal2 [354.76um 224.28um] [360.39um 224.28um] 0.28um rpD:0 bl:
+#   <id:1366446 Vertical $abc$71845$new_n13248 Metal2 [358.68um 224.28um] [358.68um 224.84um] 0.38um rpD:0 bl:0 
+#   TargetU:360.72um SourceU:358.35um
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n13251' ) )
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n13248' ) )
+# 1| &<id:1048411 Horizontal $abc$71845$new_n3773 Metal2 [82.6um 382.2um] [91um 382.2um] 0.28um rpD:1 bl:0 -----UCG----W----------t-- [82.27um:91.33um] [82.27um:91.33um] 9.06um ---------->
+# 2| &<id:1222373 Vertical $abc$71845$new_n3773 Metal3 [91um 381.08um] [91um 382.2um] 0.28um rpD:1 bl:0 -----UC-----W---------bb-- [380.75um:382.53um] [380.75um:382.53um] 1.78um ---------t>
+# 3| &<id:1534827 Horizontal $abc$71845$new_n3773 Metal2 [90.425um 381.08um] [91um 381.08um] 0.28um rpD:0 bl:0 -----UC---TD--AS------bt-- [90.095um:91.33um] [90.095um:91.33um] 1.235um ---1-S--st>
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n3773' ))
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n3681' ))
+# <id:1531019 Horizontal $abc$71845$new_n11950 Metal2 [572.6um 340.76um] ...>
+DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11950' ))
+DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11942' ))

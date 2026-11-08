@@ -121,7 +121,7 @@ def scriptMain ( **kw ):
         conf.cfg.katana.maxFlatEdgeOverflow  = 30
         conf.cfg.katana.hTracksReservedLocal = 15
         conf.cfg.katana.vTracksReservedLocal = 20
-        conf.cfg.katana.hTracksReservedMin   = 7
+        conf.cfg.katana.hTracksReservedMin   = 8
         conf.cfg.katana.vTracksReservedMin   = 12
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = False

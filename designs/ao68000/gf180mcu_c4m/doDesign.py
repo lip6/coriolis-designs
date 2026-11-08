@@ -67,12 +67,13 @@ def scriptMain ( **kw ):
                      , (IoPin.NORTH|IoPin.A_BEGIN, 'DAT_O[{}]',    hspace, 4*hspace, 32 )
                      ]
         conf = ChipConf( cell, ioPins=ioPinsSpec, ioPads=[] ) 
+        conf.cfg.etesian.graphics            = 2
         conf.cfg.etesian.bloat               = 'disabled'
        #conf.cfg.etesian.bloat               = 'nsxlib'
         conf.cfg.etesian.densityVariation    = 0.05
         conf.cfg.etesian.aspectRatio         = 1.0
        #conf.cfg.etesian.densificationMode                = 'Targeted'  # 'Uniform' / 'Targeted' / 'Disabled
-        conf.cfg.etesian.densificationMode                = 'Old'
+        conf.cfg.etesian.densificationMode                = 'PrePlace'
         conf.cfg.etesian.densificationTargetDensity       = 1.0
         conf.cfg.etesian.densificationMaxFactor           = 5.0
         conf.cfg.etesian.densificationNbRampSteps         = 1

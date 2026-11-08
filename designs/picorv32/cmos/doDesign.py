@@ -131,6 +131,11 @@ def scriptMain ( **kw ):
         conf.cfg.etesian.bloat               = 'disabled'
         conf.cfg.etesian.densityVariation    = 0.05
         conf.cfg.etesian.aspectRatio         = 1.0
+        conf.cfg.etesian.densificationMode             = 'Uniform'
+        conf.cfg.etesian.densificationTargetDensity    = 1.0
+        conf.cfg.etesian.densificationMaxFactor        = 5.0
+        conf.cfg.etesian.densificationNbRampSteps      = 1
+        conf.cfg.etesian.densificationTargetedStrength = 0.5
         conf.cfg.katana.maxFlatEdgeOverflow  = 100
        # etesian.spaceMargin is ignored if the coreSize is directly set.
        #conf.cfg.etesian.spaceMargin         = 0.10
