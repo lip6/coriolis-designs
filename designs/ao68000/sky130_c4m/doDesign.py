@@ -173,21 +173,28 @@ def scriptMain ( **kw ):
         conf.cfg.misc.verboseLevel1          = True
         conf.cfg.misc.verboseLevel2          = True
        #conf.cfg.etesian.bloat               = 'Flexlib'
+       #conf.cfg.etesian.densificationMode                = 'Targeted'  # 'Uniform' / 'Targeted' / 'Disabled
+        conf.cfg.etesian.densificationMode                = 'Uniform'
+        conf.cfg.etesian.densificationTargetDensity       = 1.0 
+        conf.cfg.etesian.densificationMaxFactor           = 5.0 
+        conf.cfg.etesian.densificationNbRampSteps         = 1
+        conf.cfg.etesian.densificationTargetedStrength    = 0.5 
+        conf.cfg.etesian.densificationKeepThroughDetailed = True
         conf.cfg.etesian.densityVariation    = 0.05
         conf.cfg.etesian.aspectRatio         = 1.0
        # etesian.spaceMargin is ignored if the coreSize is directly set.
         conf.cfg.etesian.spaceMargin         = 1.45
         conf.cfg.anabatic.searchHalo         = 1
         conf.cfg.anabatic.gcellAspectRatio   = 2.0
-        conf.cfg.anabatic.globalIterations   = 30
+        conf.cfg.anabatic.globalIterations   = 40
         conf.cfg.katana.maxFlatEdgeOverflow  = 300
         conf.cfg.anabatic.topRoutingLayer    = 'm4'
        #conf.cfg.anabatic.gcellAspectRatio   = 1.8 
         conf.cfg.katana.maxFlatEdgeOverflow  = 400
         conf.cfg.katana.hTracksReservedLocal = 21
         conf.cfg.katana.vTracksReservedLocal = 26
-        conf.cfg.katana.hTracksReservedMin   = 11
-        conf.cfg.katana.vTracksReservedMin   = 9
+        conf.cfg.katana.hTracksReservedMin   = 10
+        conf.cfg.katana.vTracksReservedMin   = 8
        #conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = False
         conf.cfg.katana.dumpMeasures         = True
@@ -202,7 +209,7 @@ def scriptMain ( **kw ):
         conf.bRows               = 2
         conf.chipName            = 'chip'
         conf.coreToChipClass     = CoreToChip
-        conf.coreSize            = conf.computeCoreSize( 174*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 168*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( u( 40*90.0+5.0 + 2*214.0), u( 40*90.0+5.0 + 2*214.0) )
         conf.useHTree( 'CLK_I', Spares.HEAVY_LEAF_LOAD )
         conf.useHTree( 'reset_n' )

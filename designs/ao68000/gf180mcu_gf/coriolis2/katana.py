@@ -102,5 +102,5 @@ from coriolis.Hurricane import DebugSession
 #DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n3773' ))
 #DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n3681' ))
 # <id:1531019 Horizontal $abc$71845$new_n11950 Metal2 [572.6um 340.76um] ...>
-DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11950' ))
-DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11942' ))
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11950' ))
+#DebugSession.addToTrace( katana.getCell().getNet( '$abc$71845$new_n11942' ))

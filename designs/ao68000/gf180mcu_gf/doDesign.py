@@ -26,7 +26,7 @@ def scriptMain ( **kw ):
 
     with overlay.CfgCache(priority=Cfg.Parameter.Priority.UserFile) as cfg:
         cfg.misc.logMode       = True
-        cfg.misc.verboseLevel2 = True
+        cfg.misc.verboseLevel1 = True
         cfg.misc.verboseLevel2 = True
         #cfg.misc.minTraceLevel = 120
         #cfg.misc.maxTraceLevel = 122
@@ -88,11 +88,11 @@ def scriptMain ( **kw ):
        #conf.cfg.etesian.spaceMargin         = 0.10
        #conf.cfg.anabatic.searchHalo         = 2
         conf.cfg.anabatic.gcellAspectRatio   = 1.5
-        conf.cfg.anabatic.globalIterations   = 35
+        conf.cfg.anabatic.globalIterations   = 40
         conf.cfg.katana.maxFlatEdgeOverflow  = 300
-        conf.cfg.katana.hTracksReservedLocal = 13
+        conf.cfg.katana.hTracksReservedLocal = 14
         conf.cfg.katana.vTracksReservedLocal = 15
-        conf.cfg.katana.hTracksReservedMin   = 10
+        conf.cfg.katana.hTracksReservedMin   = 11
         conf.cfg.katana.vTracksReservedMin   =  9
         conf.cfg.katana.trackFill            = 0
         conf.cfg.katana.runRealignStage      = True
@@ -104,7 +104,7 @@ def scriptMain ( **kw ):
         conf.bColumns            = 2
         conf.bRows               = 2
         conf.chipName            = 'chip'
-        conf.coreSize            = conf.computeCoreSize( 176*conf.sliceHeight, 1.0 )
+        conf.coreSize            = conf.computeCoreSize( 172*conf.sliceHeight, 1.0 )
         conf.chipSize            = ( 100*conf.sliceHeight, 100*conf.sliceHeight )
         conf.useHTree( 'CLK_I', Spares.HEAVY_LEAF_LOAD )
         conf.useHTree( 'reset_n' )
