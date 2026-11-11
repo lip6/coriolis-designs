@@ -13,6 +13,7 @@ from coriolis.designflow.gtkwave   import GtkWave
 from coriolis.designflow.yosys     import Yosys
 from coriolis.designflow.blif2vst  import Blif2Vst
 from coriolis.designflow.klayout   import Klayout
+from coriolis.designflow.graal     import Graal
 from coriolis.designflow.pnr       import PnR
 from coriolis.designflow.s2r       import S2R
 from coriolis.designflow.lvx       import Lvx
@@ -39,16 +40,17 @@ rulePnR = PnR.mkRule( 'gds', [ topName+'_cts_r.ap'
                            , [ruleYosys]
                            , doDesign.scriptMain
                            , topName=topName )
-ruleCgt   = PnR .mkRule( 'cgt' )
-ruleVasy  = Vasy.mkRule( 'vasy', topName+'_cts_r.v'
-                               , rulePnR.file_target(1)
-                               , Vasy.Overwrite|Vasy.RemovePowerSupplies )
+ruleCgt   = PnR  .mkRule( 'cgt' )
+ruleGraal = Graal.mkRule( 'graal' )
+ruleVasy  = Vasy .mkRule( 'vasy', topName+'_cts_r.v'
+                                , rulePnR.file_target(1)
+                                , Vasy.Overwrite|Vasy.RemovePowerSupplies )
 ruleIverilog = Iverilog.mkRule( 'iverilog', [ruleVasy, 'tb_counter.v'] )
 ruleDruc     = Druc    .mkRule( 'druc'    , [rulePnR], flags=0 )
 ruleClean    = Clean   .mkRule( [ 'lefRWarning.log', 'cgt.log' ] )
 
 from pdks.nsx2 import setup_techno
-setup_techno( 'gf180mcu' )
+setup_techno( 'sg13g2' )
 
 S2R.flags  = S2R.NoReplaceBlackboxes 
 ruleS2R    = S2R   .mkRule( 's2r'   , topName + '_cts_r.gds'    , [rulePnR], S2R.flags )

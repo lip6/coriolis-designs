@@ -13,6 +13,7 @@ from coriolis.designflow.iverilog           import Iverilog
 from coriolis.designflow.gtkwave            import GtkWave
 from coriolis.designflow.yosys              import Yosys
 from coriolis.designflow.blif2vst           import Blif2Vst
+from coriolis.designflow.graal              import Graal
 from coriolis.designflow.klayout            import Klayout
 from coriolis.designflow.pnr                import PnR
 from coriolis.designflow.s2r                import S2R
@@ -48,6 +49,7 @@ ruleVasy     = Vasy.mkRule    ( 'vasy', f'{topName}_cts_r.v'
 ruleDruc     = Druc    .mkRule( 'druc', [rulePnR], flags=0 )
 ruleIverilog = Iverilog.mkRule( 'iverilog', [ ruleVasy, 'tb_counter.v' ] )
 ruleCgt      = PnR     .mkRule( 'cgt' )
+ruleGraal    = Graal   .mkRule( 'graal' )
 ruleClean    = Clean   .mkRule( [ 'lefRWarning.log', 'cgt.log' ] )
 
 from pdks.nsx2 import setup_techno
